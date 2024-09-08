@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PDFViewControl" customModule="PdfViewer" customModuleProvider="target">
+            <connections>
+                <outlet property="bookmarkButton" destination="x7k-mX-XBO" id="9MS-x4-tyt"/>
+                <outlet property="searchButton" destination="Bua-yV-aNm" id="q8R-tc-nkf"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="413" height="70"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bua-yV-aNm">
+                    <rect key="frame" x="303" y="0.0" width="50" height="70"/>
+                    <color key="backgroundColor" white="1" alpha="0.33203633630000001" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="NSu-lR-Ifr"/>
+                    </constraints>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain">
+                        <imageReference key="image" image="magnifyingglass" catalog="system" symbolScale="large" renderingMode="hierarchical-single">
+                            <hierarchicalColors>
+                                <color systemColor="labelColor"/>
+                                <color systemColor="secondaryLabelColor"/>
+                                <color systemColor="tertiaryLabelColor"/>
+                            </hierarchicalColors>
+                        </imageReference>
+                    </buttonConfiguration>
+                    <connections>
+                        <action selector="searchAction:" destination="-1" eventType="touchUpInside" id="RH9-R2-x0w"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x7k-mX-XBO">
+                    <rect key="frame" x="353" y="0.0" width="50" height="70"/>
+                    <color key="backgroundColor" white="1" alpha="0.33203633630000001" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="u1X-eE-3kH"/>
+                    </constraints>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain">
+                        <imageReference key="image" image="bookmark.fill" catalog="system" symbolScale="large" renderingMode="hierarchical-single">
+                            <hierarchicalColors>
+                                <color systemColor="labelColor"/>
+                                <color systemColor="secondaryLabelColor"/>
+                                <color systemColor="tertiaryLabelColor"/>
+                            </hierarchicalColors>
+                        </imageReference>
+                    </buttonConfiguration>
+                    <connections>
+                        <action selector="bookmarkAction:" destination="-1" eventType="touchUpInside" id="8ce-MH-Byu"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="x7k-mX-XBO" firstAttribute="leading" secondItem="Bua-yV-aNm" secondAttribute="trailing" id="25m-ol-gZh"/>
+                <constraint firstAttribute="bottom" secondItem="Bua-yV-aNm" secondAttribute="bottom" id="BJj-KE-gsG"/>
+                <constraint firstAttribute="bottom" secondItem="x7k-mX-XBO" secondAttribute="bottom" id="XpV-pG-Q3j"/>
+                <constraint firstItem="Bua-yV-aNm" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="YuB-qU-3bc"/>
+                <constraint firstItem="x7k-mX-XBO" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="z3c-ff-ozh"/>
+                <constraint firstAttribute="trailing" secondItem="x7k-mX-XBO" secondAttribute="trailing" constant="10" id="zNV-zV-x83"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="141.22137404580153" y="80.281690140845072"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="bookmark.fill" catalog="system" width="110" height="128"/>
+        <image name="magnifyingglass" catalog="system" width="128" height="117"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="tertiaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>
