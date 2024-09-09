@@ -10,6 +10,7 @@ import UIKit
 protocol PDFViewControlDelegate: AnyObject {
     func bookmark() -> Bool
     func search()
+    func edit()
 }
 
 class PDFViewControl: UIView {
@@ -58,8 +59,13 @@ class PDFViewControl: UIView {
         let bookmarked = delegate?.bookmark() ?? false
         bookmark(enable: bookmarked)
     }
+
     @IBAction private func searchAction(_ sender: Any) {
         delegate?.search()
+    }
+
+    @IBAction private func editAction(_ sender: UIButton) {
+        delegate?.edit()
     }
 }
 

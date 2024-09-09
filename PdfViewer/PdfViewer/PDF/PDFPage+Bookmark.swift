@@ -9,7 +9,7 @@ import PDFKit
 
 extension PDFPage {
     var bookmarked: Bool {
-        return annotations.contains(where: { $0 is PDFBookmark })
+        return annotations.contains(where: { $0 is PDFBookmarkAnnotation })
     }
     
     func bookmark() {
@@ -21,7 +21,7 @@ extension PDFPage {
     }
     
     func removeBookmark() {
-        for annotation in annotations where annotation is PDFBookmark {
+        for annotation in annotations where annotation is PDFBookmarkAnnotation {
             removeAnnotation(annotation)
         }
     }
@@ -29,6 +29,6 @@ extension PDFPage {
     func addBookmark() {
         let bounds = bounds(for: .cropBox)
         let annotationBounds = CGRect(x: bounds.width - 50, y: bounds.height - 50, width: 30, height: 50)
-        addAnnotation(PDFBookmark(bounds: annotationBounds))
+        addAnnotation(PDFBookmarkAnnotation(bounds: annotationBounds))
     }
 }

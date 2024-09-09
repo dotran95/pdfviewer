@@ -68,14 +68,24 @@ class PDFViewer: UIViewController {
 }
 
 extension PDFViewer: PDFViewControlDelegate {
-    
+
     func bookmark() -> Bool {
+        removeDocumentEditor()
         pdfView.currentPage?.bookmark()
         return pdfView.currentPage?.bookmarked ?? false
     }
     
     func search() {
-        present(searchVc, animated: true)
+        removeDocumentEditor()
+//        present(searchVc, animated: true)
+    }
+
+    func edit() {
+        if isShowDocumentEditor {
+            removeDocumentEditor()
+            return
+        }
+        showDocmentEditor()
     }
 }
 
@@ -84,6 +94,43 @@ extension PDFViewer: PDFSearchDelegate {
         searchVc.dismiss(animated: true) {
             self.pdfView.go(to: selection)
             self.pdfView.setCurrentSelection(selection, animate: true)
+        }
+    }
+}
+
+// MARK: - PDFDocumentEditor
+extension PDFViewer {
+
+    var isShowDocumentEditor: Bool {
+        return view.subviews.first(where: { $0.tag == PDFDocumentEditor.kTag }) != nil
+    }
+
+    func showDocmentEditor() {
+        removeDocumentEditor()
+
+        guard let page = pdfView.currentPage else {
+            return
+        }
+        let documentEditor = PDFDocumentEditor(page: page, scaleFactor: pdfView.scaleFactor)
+
+        view.addSubview(documentEditor)
+        
+        documentEditor.snp.makeConstraints { make in
+            make.top.equalTo(controlView.snp.bottom)
+            make.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+
+    func removeDocumentEditor() {
+        for documentView in view.subviews.filter({ $0.tag == PDFDocumentEditor.kTag }) {
+            if let doc = documentView as? PDFDocumentEditor {
+               doc.onSave()
+                pdfView.setNeedsDisplay()
+                pdfView.layoutIfNeeded()
+                print(pdfView.currentPage?.annotations)
+            }
+            documentView.removeFromSuperview()
         }
     }
 }

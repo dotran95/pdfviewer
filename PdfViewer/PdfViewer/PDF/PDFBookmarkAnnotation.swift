@@ -8,13 +8,13 @@
 import UIKit
 import PDFKit
 
-class PDFBookmark: PDFAnnotation {
+class PDFBookmarkAnnotation: PDFAnnotation {
     
     static let identifier = "PDFBookmark"
     
     init(bounds: CGRect) {
         super.init(bounds: bounds, forType: .line, withProperties: nil)
-        contents = PDFBookmark.identifier
+        contents = PDFBookmarkAnnotation.identifier
     }
     
     required init?(coder: NSCoder) {

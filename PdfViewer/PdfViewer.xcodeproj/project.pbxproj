@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1C367AA72C8B3731006CEB0E /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1C367AA62C8B3731006CEB0E /* SnapKit */; };
-		1C367AA92C8B560E006CEB0E /* PDFBookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C367AA82C8B560E006CEB0E /* PDFBookmark.swift */; };
+		1C367AA92C8B560E006CEB0E /* PDFBookmarkAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C367AA82C8B560E006CEB0E /* PDFBookmarkAnnotation.swift */; };
 		1C367AAB2C8B6F5A006CEB0E /* PDFPage+Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C367AAA2C8B6F5A006CEB0E /* PDFPage+Bookmark.swift */; };
 		1C367AAD2C8C0981006CEB0E /* Sample1.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 1C367AAC2C8C0981006CEB0E /* Sample1.pdf */; };
 		1C46F60C2C8B286100A60388 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C46F60B2C8B286100A60388 /* AppDelegate.swift */; };
@@ -26,6 +26,10 @@
 		1C46F6442C8B2EA900A60388 /* PDFViewControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C46F6432C8B2EA900A60388 /* PDFViewControl.xib */; };
 		DE527ABE2C8E84C000521495 /* PDFSearchVc.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE527ABD2C8E84C000521495 /* PDFSearchVc.swift */; };
 		DE527AC02C8E857600521495 /* PDFSearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE527ABF2C8E857600521495 /* PDFSearchResultCell.swift */; };
+		DE6BF1FC2C8EE470004CECEC /* PDFDocumentEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6BF1FB2C8EE470004CECEC /* PDFDocumentEditor.swift */; };
+		DE6BF1FE2C8FFBAC004CECEC /* PDFDocumentText.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6BF1FD2C8FFBAC004CECEC /* PDFDocumentText.swift */; };
+		DE6BF2002C918271004CECEC /* PDFViewer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6BF1FF2C918271004CECEC /* PDFViewer+Extension.swift */; };
+		DE6BF2022C919481004CECEC /* PDFImageAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6BF2012C919481004CECEC /* PDFImageAnnotation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,7 +50,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1C367AA82C8B560E006CEB0E /* PDFBookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFBookmark.swift; sourceTree = "<group>"; };
+		1C367AA82C8B560E006CEB0E /* PDFBookmarkAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFBookmarkAnnotation.swift; sourceTree = "<group>"; };
 		1C367AAA2C8B6F5A006CEB0E /* PDFPage+Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PDFPage+Bookmark.swift"; sourceTree = "<group>"; };
 		1C367AAC2C8C0981006CEB0E /* Sample1.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Sample1.pdf; sourceTree = "<group>"; };
 		1C46F6082C8B286100A60388 /* PdfViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PdfViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,6 +72,10 @@
 		1C46F6432C8B2EA900A60388 /* PDFViewControl.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PDFViewControl.xib; sourceTree = "<group>"; };
 		DE527ABD2C8E84C000521495 /* PDFSearchVc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFSearchVc.swift; sourceTree = "<group>"; };
 		DE527ABF2C8E857600521495 /* PDFSearchResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFSearchResultCell.swift; sourceTree = "<group>"; };
+		DE6BF1FB2C8EE470004CECEC /* PDFDocumentEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFDocumentEditor.swift; sourceTree = "<group>"; };
+		DE6BF1FD2C8FFBAC004CECEC /* PDFDocumentText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFDocumentText.swift; sourceTree = "<group>"; };
+		DE6BF1FF2C918271004CECEC /* PDFViewer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PDFViewer+Extension.swift"; sourceTree = "<group>"; };
+		DE6BF2012C919481004CECEC /* PDFImageAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFImageAnnotation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,10 +164,14 @@
 				1C46F63B2C8B28B200A60388 /* PDFViewer.swift */,
 				1C46F6412C8B2E4800A60388 /* PDFViewControl.swift */,
 				1C46F6432C8B2EA900A60388 /* PDFViewControl.xib */,
-				1C367AA82C8B560E006CEB0E /* PDFBookmark.swift */,
+				1C367AA82C8B560E006CEB0E /* PDFBookmarkAnnotation.swift */,
+				DE6BF2012C919481004CECEC /* PDFImageAnnotation.swift */,
 				1C367AAA2C8B6F5A006CEB0E /* PDFPage+Bookmark.swift */,
 				DE527ABD2C8E84C000521495 /* PDFSearchVc.swift */,
 				DE527ABF2C8E857600521495 /* PDFSearchResultCell.swift */,
+				DE6BF1FB2C8EE470004CECEC /* PDFDocumentEditor.swift */,
+				DE6BF1FD2C8FFBAC004CECEC /* PDFDocumentText.swift */,
+				DE6BF1FF2C918271004CECEC /* PDFViewer+Extension.swift */,
 			);
 			path = PDF;
 			sourceTree = "<group>";
@@ -306,11 +318,15 @@
 			files = (
 				1C46F6102C8B286100A60388 /* ViewController.swift in Sources */,
 				1C46F60C2C8B286100A60388 /* AppDelegate.swift in Sources */,
+				DE6BF2002C918271004CECEC /* PDFViewer+Extension.swift in Sources */,
 				1C46F6422C8B2E4800A60388 /* PDFViewControl.swift in Sources */,
 				1C46F63C2C8B28B200A60388 /* PDFViewer.swift in Sources */,
 				1C367AAB2C8B6F5A006CEB0E /* PDFPage+Bookmark.swift in Sources */,
+				DE6BF2022C919481004CECEC /* PDFImageAnnotation.swift in Sources */,
 				DE527ABE2C8E84C000521495 /* PDFSearchVc.swift in Sources */,
-				1C367AA92C8B560E006CEB0E /* PDFBookmark.swift in Sources */,
+				DE6BF1FC2C8EE470004CECEC /* PDFDocumentEditor.swift in Sources */,
+				1C367AA92C8B560E006CEB0E /* PDFBookmarkAnnotation.swift in Sources */,
+				DE6BF1FE2C8FFBAC004CECEC /* PDFDocumentText.swift in Sources */,
 				1C46F60E2C8B286100A60388 /* SceneDelegate.swift in Sources */,
 				DE527AC02C8E857600521495 /* PDFSearchResultCell.swift in Sources */,
 			);
