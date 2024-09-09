@@ -37,6 +37,7 @@ class PDFViewControl: UIView {
     }
     
     func bookmark(enable: Bool) {
+        bookmarkButton.tintColor = enable ? .red : .black
         bookmarkButton.setImage(enable ? bookmarkedImage:bookmarkImage, for: .normal)
     }
     
@@ -49,7 +50,7 @@ class PDFViewControl: UIView {
         addSubview(view)
         view.frame = self.bounds
         
-        bookmarkButton.tintColor = .red
+        bookmarkButton.tintColor = .black
         bookmark(enable: false)
     }
     

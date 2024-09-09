@@ -14,7 +14,9 @@ class PDFViewer: UIViewController {
     private var pdfView = PDFView()
     
     private var controlView = PDFViewControl()
-    
+
+    private var searchVc = PDFSearchVc()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         makeUIs()
@@ -23,6 +25,9 @@ class PDFViewer: UIViewController {
     func loadContent(document: PDFDocument) {
         pdfView.document = document
         controlView.allowBookmark = document.allowsDocumentChanges
+        searchVc.document = pdfView.document
+        searchVc.modalPresentationStyle = .fullScreen
+        searchVc.delegate = self
     }
     
     private func makeUIs() {
@@ -69,5 +74,16 @@ extension PDFViewer: PDFViewControlDelegate {
         return pdfView.currentPage?.bookmarked ?? false
     }
     
-    func search() { }
+    func search() {
+        present(searchVc, animated: true)
+    }
+}
+
+extension PDFViewer: PDFSearchDelegate {
+    func onSelect(selection: PDFSelection) {
+        searchVc.dismiss(animated: true) {
+            self.pdfView.go(to: selection)
+            self.pdfView.setCurrentSelection(selection, animate: true)
+        }
+    }
 }

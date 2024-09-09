@@ -24,6 +24,8 @@
 		1C46F63E2C8B29B800A60388 /* Sample.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 1C46F63D2C8B29B800A60388 /* Sample.pdf */; };
 		1C46F6422C8B2E4800A60388 /* PDFViewControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C46F6412C8B2E4800A60388 /* PDFViewControl.swift */; };
 		1C46F6442C8B2EA900A60388 /* PDFViewControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C46F6432C8B2EA900A60388 /* PDFViewControl.xib */; };
+		DE527ABE2C8E84C000521495 /* PDFSearchVc.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE527ABD2C8E84C000521495 /* PDFSearchVc.swift */; };
+		DE527AC02C8E857600521495 /* PDFSearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE527ABF2C8E857600521495 /* PDFSearchResultCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +66,8 @@
 		1C46F63D2C8B29B800A60388 /* Sample.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Sample.pdf; sourceTree = "<group>"; };
 		1C46F6412C8B2E4800A60388 /* PDFViewControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFViewControl.swift; sourceTree = "<group>"; };
 		1C46F6432C8B2EA900A60388 /* PDFViewControl.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PDFViewControl.xib; sourceTree = "<group>"; };
+		DE527ABD2C8E84C000521495 /* PDFSearchVc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFSearchVc.swift; sourceTree = "<group>"; };
+		DE527ABF2C8E857600521495 /* PDFSearchResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFSearchResultCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +158,8 @@
 				1C46F6432C8B2EA900A60388 /* PDFViewControl.xib */,
 				1C367AA82C8B560E006CEB0E /* PDFBookmark.swift */,
 				1C367AAA2C8B6F5A006CEB0E /* PDFPage+Bookmark.swift */,
+				DE527ABD2C8E84C000521495 /* PDFSearchVc.swift */,
+				DE527ABF2C8E857600521495 /* PDFSearchResultCell.swift */,
 			);
 			path = PDF;
 			sourceTree = "<group>";
@@ -303,8 +309,10 @@
 				1C46F6422C8B2E4800A60388 /* PDFViewControl.swift in Sources */,
 				1C46F63C2C8B28B200A60388 /* PDFViewer.swift in Sources */,
 				1C367AAB2C8B6F5A006CEB0E /* PDFPage+Bookmark.swift in Sources */,
+				DE527ABE2C8E84C000521495 /* PDFSearchVc.swift in Sources */,
 				1C367AA92C8B560E006CEB0E /* PDFBookmark.swift in Sources */,
 				1C46F60E2C8B286100A60388 /* SceneDelegate.swift in Sources */,
+				DE527AC02C8E857600521495 /* PDFSearchResultCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
