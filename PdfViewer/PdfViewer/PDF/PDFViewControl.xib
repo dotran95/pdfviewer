@@ -11,6 +11,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PDFViewControl" customModule="PdfViewer" customModuleProvider="target">
             <connections>
                 <outlet property="bookmarkButton" destination="x7k-mX-XBO" id="9MS-x4-tyt"/>
+                <outlet property="editDocumentButton" destination="IRf-Bo-k27" id="DCO-bR-PQb"/>
                 <outlet property="searchButton" destination="Bua-yV-aNm" id="q8R-tc-nkf"/>
             </connections>
         </placeholder>

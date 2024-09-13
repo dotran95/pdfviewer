@@ -5,7 +5,8 @@
 //  Created by dotn on 11/9/24.
 //
 
-import Foundation
+import UIKit
+import PDFKit
 
 extension CGRect {
     func scale(_ scaleFactor: CGFloat) -> CGRect {
@@ -84,4 +85,51 @@ extension CGSize {
 
     static func / (value: CGFloat, point: CGSize) -> CGSize { point / value }
 
+}
+
+extension String{
+
+    func sizeWithConstrainedHeight(_ height: CGFloat, font: UIFont) -> CGSize {
+        let constraintRect = CGSize(width: CGFloat.greatestFiniteMagnitude, height: height)
+
+        let boundingBox = self.boundingRect(with: constraintRect, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [.font: font], context: nil)
+
+        return boundingBox.size
+    }
+
+    func sizeWithConstrainedWidth(_ width: CGFloat, font: UIFont) -> CGSize {
+        let constraintRect = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
+        let boundingBox = self.boundingRect(with: constraintRect, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [.font: font], context: nil)
+
+        return boundingBox.size
+    }
+
+    func sizeToFit(_ maxWidth: CGFloat, font: UIFont) -> CGSize {
+        let size = sizeWithConstrainedHeight(font.pointSize, font: font)
+        if size.width <= maxWidth {
+            return size
+        }
+
+        return sizeWithConstrainedWidth(maxWidth, font: font)
+    }
+
+}
+
+extension PDFView {
+    func disableScroll(_ isDisable: Bool) {
+        for subView in subviews {
+            scrollDisable(subView, isDisable: isDisable)
+        }
+    }
+
+    private func scrollDisable(_ target: UIView, isDisable: Bool) {
+        if let scrollView = target as? UIScrollView {
+            scrollView.isScrollEnabled = !isDisable
+            print("PDFView isScrollEnabled \(scrollView.isScrollEnabled)")
+        }
+
+        for subView in target.subviews {
+            scrollDisable(subView, isDisable: isDisable)
+        }
+    }
 }
