@@ -16,7 +16,7 @@ enum PanAnnotationTransitionType {
     case none
 }
 
-class PDFDocumentEdit {
+class PDFEditView {
 
     weak var parent: PDFViewer?
 
@@ -26,7 +26,7 @@ class PDFDocumentEdit {
 
     private let sidebarView: PDFDocumentSideBar
 
-    var panTransition: PanAnnotationTransitionType = .none
+    private var panTransition: PanAnnotationTransitionType = .none
 
     lazy var tapGesture: UITapGestureRecognizer = {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
@@ -45,7 +45,7 @@ class PDFDocumentEdit {
         self.parent = parent
     }
 
-    func addSideBarNavigation() {
+    func showEditView() {
         guard let parent = parent else { return }
         // Set up the sidebar
         parent.view.addSubview(sidebarView)
@@ -56,7 +56,7 @@ class PDFDocumentEdit {
             make.right.equalTo(parent.pdfView).inset(12)
             make.width.equalTo(40)
         }
-        sidebarView.delegate = parent
+        sidebarView.delegate = self
 
         addGestureRecognizers()
     }
@@ -67,31 +67,25 @@ class PDFDocumentEdit {
         removeCurrentSelectedAnnotation()
     }
 
-    func addTextAnnotation() {
-        guard let pdfView = pdfView, let page = pdfView.currentPage else { return }
-        // Calculate the page's size
-        let centerPoint = (pdfView.bounds.size / 2).toPoint()
-        let pointInPage = pdfView.convert(centerPoint, to: page)
-
-        let font = UIFont.systemFont(ofSize: 50)
-
-        // Determine the centered position
-        let textSize = CGSize(width: 130, height: 50 * 1.227)
-        let x = pointInPage.x - textSize.width / 2
-        let y: CGFloat = pointInPage.y - textSize.height / 2
-
-        let annotationBounds = CGRect(origin: .init(x: x, y: y), size: textSize)
-
-        // Create the text annotation
-        let annotation = TextAnnotation(bounds: annotationBounds)
-        annotation.font = font
-        annotation.widgetStringValue = "Text"
-        page.addAnnotation(annotation)
-    }
 }
 
-extension PDFDocumentEdit {
-    // MARK: - Private funcs
+// MARK: - PDFDocumentSideBarDelegate
+extension PDFEditView: PDFDocumentSideBarDelegate {
+
+    func onClick(_ type: PDFDocumentSideBarbuttons) {
+        switch type {
+        case .text:
+            addTextAnnotation()
+            break
+        default:
+            break
+        }
+    }
+
+}
+
+// MARK: - Private funcs
+extension PDFEditView {
     private func addGestureRecognizers() {
         guard let parent = parent else { return }
         // Add tap gesture recognizer to detect touches
@@ -121,7 +115,7 @@ extension PDFDocumentEdit {
                     return
                 }
                 if let textAnnotation = customAnnotation as? TextAnnotation {
-                    animateAnnotationToCenter(textAnnotation, onPage: currentPage)
+                    showEditTextView(annotation: textAnnotation)
                     return
                 }
                 return
@@ -132,7 +126,6 @@ extension PDFDocumentEdit {
 
     @objc
     private func handlePan(_ gesture: PanGestureRecognizer) {
-        print("panTransition")
         guard let pdfView = pdfView,
               let annotation = selectedAnnotation,
               let currentPage = pdfView.currentPage,
@@ -178,7 +171,7 @@ extension PDFDocumentEdit {
     }
 
     private func setCurrentSelectedAnnotation(_ annotation: Annotation) {
-        guard let pdfView = pdfView, let config = parent?.config else { return }
+        guard let pdfView = pdfView else { return }
         // Remove old annotation
         removeCurrentSelectedAnnotation()
 
@@ -202,67 +195,57 @@ extension PDFDocumentEdit {
         pdfView.disableScroll(false)
     }
 
-    func animateAnnotationToCenter(_ annotation: TextAnnotation, onPage page: PDFPage) {
-        guard let pdfView = pdfView else { return }
+}
+
+extension PDFEditView {
+    private func addTextAnnotation() {
+        guard let pdfView = pdfView, let page = pdfView.currentPage else { return }
+        // Calculate the page's size
+        let centerPoint = (pdfView.bounds.size / 2).toPoint()
+        let pointInPage = pdfView.convert(centerPoint, to: page)
+
+        let font = UIFont.systemFont(ofSize: 50)
+
+        // Determine the centered position
+        let textSize = CGSize(width: 130, height: 50 * 1.227)
+        let x = pointInPage.x - textSize.width / 2
+        let y: CGFloat = pointInPage.y - textSize.height / 2
+
+        // Create the text annotation
+        let annotation = TextAnnotation(bounds: .zero)
+        annotation.font = font
+        annotation.contents = "Text"
+        annotation.bounds = .init(origin: .init(x: x, y: y), size: annotation.calculateTextSize())
+        page.addAnnotation(annotation)
+    }
+
+    func showEditTextView(annotation: TextAnnotation) {
+        guard let parent = parent, let pdfView = pdfView, let page = pdfView.currentPage else { return }
 
         // Get the current annotation's position
         let currentBounds = annotation.bounds
-        let currentpoint = currentBounds.origin
-        let frame = pdfView.convert(annotation.bounds, from: page)
+        let scaleFactor = min(pdfView.scaleFactor, 1)
 
-        print(frame, pdfView.bounds)
+        let editTextView = PDFEditTextView(annotationRect: pdfView.convertBounds(annotation.bounds))
+        editTextView.textView.text = annotation.contents
+        editTextView.textView.textColor = annotation.fontColor
+        editTextView.textView.font = annotation.font?.copyWith(scale: scaleFactor)
+        editTextView.show(parent)
 
-        let view = CustomTextFieldView(textFieldFrame: frame)
-        view.backgroundColor = .black.withAlphaComponent(0)
-        view.textField.text = annotation.widgetStringValue
-        view.textField.textColor = annotation.fontColor
-        view.textField.font = annotation.font
-        parent?.view.addSubview(view)
-        view.snp.makeConstraints { make in
-            make.edges.equalTo(parent!.view)
+        page.removeAnnotation(annotation)
+        editTextView.view.snp.makeConstraints { make in
+            make.edges.equalTo(pdfView)
         }
 
-        UIView.animate(withDuration: 0.3) {
-            view.backgroundColor = .black.withAlphaComponent(0.5)
-            view.textField.frame = frame
+        editTextView.onCompleted = { txtView in
+            annotation.contents = txtView.text
+            annotation.fontColor = txtView.textColor
+            annotation.font = txtView.font
+
+            txtView.sizeToFit()
+            annotation.bounds = .init(origin: currentBounds.origin, size: (txtView.contentSize / pdfView.scaleFactor) + 12)
+            page.addAnnotation(annotation)
         }
-    }
-}
 
-class CustomTextFieldView: UIView {
-
-    let textField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Enter text here"
-        textField.borderStyle = .roundedRect
-        textField.translatesAutoresizingMaskIntoConstraints = false // Enable Auto Layout
-        textField.backgroundColor = .clear
-        textField.layer.borderColor = UIColor.clear.cgColor
-        return textField
-    }()
-
-    // Initializer
-    init(textFieldFrame: CGRect) {
-        super.init(frame: .zero)
-
-        // Add the text field as a subview
-        self.addSubview(textField)
-        textField.frame = textFieldFrame
-
-    }
-
-    // Required initializer for using with Storyboard (if needed)
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let touchLocation = touch.location(in: self)
-
-        // If the touch location is outside the textField bounds, remove the view
-        if !textField.frame.contains(touchLocation) {
-            self.removeFromSuperview()
-        }
     }
 }

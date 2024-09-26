@@ -125,11 +125,36 @@ extension PDFView {
     private func scrollDisable(_ target: UIView, isDisable: Bool) {
         if let scrollView = target as? UIScrollView {
             scrollView.isScrollEnabled = !isDisable
-            print("PDFView isScrollEnabled \(scrollView.isScrollEnabled)")
         }
 
         for subView in target.subviews {
             scrollDisable(subView, isDisable: isDisable)
         }
+    }
+
+    func convertBounds(_ annotaion: CGRect) -> CGRect {
+        guard let pageBounds = currentPage?.bounds(for: .cropBox) else { return .zero }
+
+        let newPageBounds = pageBounds * scaleFactor
+
+        var newBounds = annotaion * scaleFactor
+
+        newBounds.origin.y += (bounds.height - newPageBounds.height) / 2
+        newBounds.origin.x += (bounds.width - newPageBounds.width) / 2
+        newBounds.origin.y = bounds.maxY - newBounds.origin.y - newBounds.height
+
+        return newBounds
+    }
+
+
+}
+
+extension UIFont {
+    func copyWith(fontSize: CGFloat) -> UIFont? {
+        return UIFont.init(name: fontName, size: fontSize)
+    }
+
+    func copyWith(scale: CGFloat) -> UIFont? {
+        return copyWith(fontSize: pointSize * scale)
     }
 }

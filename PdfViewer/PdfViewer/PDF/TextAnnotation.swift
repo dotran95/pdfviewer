@@ -67,7 +67,7 @@ class Annotation: PDFAnnotation {
 class TextAnnotation: Annotation {
 
     init(bounds: CGRect) {
-        super.init(bounds: bounds, forType: PDFAnnotationSubtype(rawValue: PDFAnnotationSubtype.widget.rawValue), withProperties: nil)
+        super.init(bounds: bounds, forType: PDFAnnotationSubtype(rawValue: PDFAnnotationSubtype.freeText.rawValue), withProperties: nil)
         config()
     }
 
@@ -79,11 +79,23 @@ class TextAnnotation: Annotation {
     private func config() {
         alignment = .center
         backgroundColor = UIColor.clear
+        color = UIColor.clear
         fontColor = UIColor.black
-
-        widgetFieldType = PDFAnnotationWidgetSubtype(rawValue: PDFAnnotationWidgetSubtype.text.rawValue)
-        maximumLength = 5
-        hasComb = true
-        isMultiline = true
+        interiorColor = .clear
     }
+
+    func calculateTextSize() -> CGSize {
+        let maxWidth: CGFloat = bounds.width.isZero ? CGFloat.greatestFiniteMagnitude:bounds.width
+        let maxSize = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
+
+        let attributes = [NSAttributedString.Key.font: font]
+        let textRect = (contents ?? "").boundingRect(with: maxSize,
+                                                     options: .usesLineFragmentOrigin,
+                                                     attributes: attributes as [NSAttributedString.Key : Any],
+                                                     context: nil)
+
+        let width = bounds.width < textRect.width ? textRect.width:maxWidth
+        return CGSize(width: ceil(width + 30), height: ceil(textRect.height + 20))
+    }
+
 }

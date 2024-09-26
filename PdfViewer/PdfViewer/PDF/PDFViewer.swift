@@ -33,14 +33,14 @@ class PDFViewer: UIViewController, PDFDocumentDelegate {
 
     private var searchVc = PDFSearchVc()
 
-    private var documentEdit: PDFDocumentEdit!
+    private var documentEdit: PDFEditView!
 
     private var mode: PDFViewerMode = .view {
         didSet {
             controlView.onEdit(enable: mode == .edit)
             switch mode {
             case .edit:
-                documentEdit.addSideBarNavigation()
+                documentEdit.showEditView()
             default:
                 documentEdit.removeSideBar()
                 break
@@ -82,7 +82,7 @@ class PDFViewer: UIViewController, PDFDocumentDelegate {
         pdfView.displayDirection = .horizontal
         pdfView.displayMode = .singlePage
 
-        documentEdit = PDFDocumentEdit(items: [.text], parent: self)
+        documentEdit = PDFEditView(items: [.text], parent: self)
 
         guard let document = pdfView.document else {
             return
@@ -139,24 +139,6 @@ extension PDFViewer: PDFSearchDelegate {
         searchVc.dismiss(animated: true) {
             self.pdfView.go(to: selection)
             self.pdfView.setCurrentSelection(selection, animate: true)
-        }
-    }
-}
-
-// MARK: - Edit mode
-extension PDFViewer: PDFDocumentSideBarDelegate {
-
-    func onClick(_ type: PDFDocumentSideBarbuttons) {
-        guard mode == .edit else {
-            return
-        }
-
-        switch type {
-        case .text:
-            documentEdit.addTextAnnotation()
-            break
-        default:
-            break
         }
     }
 }
