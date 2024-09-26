@@ -31,6 +31,10 @@ extension CGRect {
     }
 
     static func / (value: CGFloat, point: CGRect) -> CGRect { point / value }
+    
+    var center: CGPoint {
+        return CGPoint(x: width / 2, y: height / 2)
+    }
 }
 
 extension CGPoint {
@@ -43,6 +47,10 @@ extension CGPoint {
     }
 
     static func + (value: CGFloat, point: CGPoint) -> CGPoint { point + value }
+    
+    static func - (point: CGPoint, value: CGPoint) -> CGPoint {
+        return CGPoint(x: point.x - value.x, y: point.y - value.y)
+    }
 
     static func * (point: CGPoint, value: CGFloat) -> CGPoint {
         return CGPoint(x: point.x * value, y: point.y * value)
@@ -125,11 +133,55 @@ extension PDFView {
     private func scrollDisable(_ target: UIView, isDisable: Bool) {
         if let scrollView = target as? UIScrollView {
             scrollView.isScrollEnabled = !isDisable
-            print("PDFView isScrollEnabled \(scrollView.isScrollEnabled)")
         }
 
         for subView in target.subviews {
             scrollDisable(subView, isDisable: isDisable)
         }
+    }
+
+    func convertBounds(_ annotaion: CGRect) -> CGRect {
+        guard let pageBounds = currentPage?.bounds(for: .cropBox) else { return .zero }
+
+        let newPageBounds = pageBounds * scaleFactor
+
+        var newBounds = annotaion * scaleFactor
+
+        newBounds.origin.y += (bounds.height - newPageBounds.height) / 2
+        newBounds.origin.x += (bounds.width - newPageBounds.width) / 2
+        newBounds.origin.y = bounds.maxY - newBounds.origin.y - newBounds.height
+
+        return newBounds
+    }
+
+
+}
+
+extension UIFont {
+    func copyWith(fontSize: CGFloat) -> UIFont? {
+        return UIFont.init(name: fontName, size: fontSize)
+    }
+
+    func copyWith(scale: CGFloat) -> UIFont? {
+        return copyWith(fontSize: pointSize * scale)
+    }
+}
+
+extension UITextView {
+    static func calculateContentSize(for text: String, 
+                                     with font: UIFont,
+                                     maxWidth: CGFloat) -> CGSize {
+        let textView = UITextView()
+        textView.text = text
+        textView.font = font
+        textView.frame = CGRect(x: 0, y: 0, width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
+        textView.isScrollEnabled = false
+        textView.autocorrectionType = .no
+        textView.spellCheckingType = .no
+        textView.textContainerInset = .init(top: 3, left: 12, bottom: 6, right: 12)
+        // Force the textView to layout its content to get the correct contentSize
+        textView.sizeToFit()
+        
+        return textView.contentSize
     }
 }

@@ -65,9 +65,13 @@ class Annotation: PDFAnnotation {
 }
 
 class TextAnnotation: Annotation {
+    
+    static let kFont = UIFont.systemFont(ofSize: 50)
+    static let kColor = UIColor.black
+    static let kBackground = UIColor.clear
 
     init(bounds: CGRect) {
-        super.init(bounds: bounds, forType: PDFAnnotationSubtype(rawValue: PDFAnnotationSubtype.widget.rawValue), withProperties: nil)
+        super.init(bounds: bounds, forType: PDFAnnotationSubtype(rawValue: PDFAnnotationSubtype.freeText.rawValue), withProperties: nil)
         config()
     }
 
@@ -79,11 +83,8 @@ class TextAnnotation: Annotation {
     private func config() {
         alignment = .center
         backgroundColor = UIColor.clear
+        color = UIColor.clear
         fontColor = UIColor.black
-
-        widgetFieldType = PDFAnnotationWidgetSubtype(rawValue: PDFAnnotationWidgetSubtype.text.rawValue)
-        maximumLength = 5
-        hasComb = true
-        isMultiline = true
+        interiorColor = .clear
     }
 }
