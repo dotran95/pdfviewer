@@ -65,6 +65,10 @@ class Annotation: PDFAnnotation {
 }
 
 class TextAnnotation: Annotation {
+    
+    static let kFont = UIFont.systemFont(ofSize: 50)
+    static let kColor = UIColor.black
+    static let kBackground = UIColor.clear
 
     init(bounds: CGRect) {
         super.init(bounds: bounds, forType: PDFAnnotationSubtype(rawValue: PDFAnnotationSubtype.freeText.rawValue), withProperties: nil)

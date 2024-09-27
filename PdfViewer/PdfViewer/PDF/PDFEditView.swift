@@ -176,7 +176,6 @@ extension PDFEditView {
         removeCurrentSelectedAnnotation()
 
         annotation.selected = true
-        annotation.isReadOnly = false
         pdfView.currentPage?.addAnnotation(annotation)
         selectedAnnotation = annotation
 
@@ -200,23 +199,27 @@ extension PDFEditView {
 extension PDFEditView {
     private func addTextAnnotation() {
         guard let pdfView = pdfView, let page = pdfView.currentPage else { return }
-        // Calculate the page's size
-        let centerPoint = (pdfView.bounds.size / 2).toPoint()
-        let pointInPage = pdfView.convert(centerPoint, to: page)
-
-        let font = UIFont.systemFont(ofSize: 50)
-
+        
+        let centerPoint = page.bounds(for: .cropBox).center
+        
+        // Defaut fontsize of page is 20 when scaleFactor equa 1
+        let font = TextAnnotation.kFont
+        let maxWidth = pdfView.bounds.width
+        
         // Determine the centered position
-        let textSize = CGSize(width: 130, height: 50 * 1.227)
-        let x = pointInPage.x - textSize.width / 2
-        let y: CGFloat = pointInPage.y - textSize.height / 2
+        let textSize: CGSize = UITextView.calculateContentSize(for: "Text",
+                                                       with: font,
+                                                       maxWidth: maxWidth)
+        
+        let origin = centerPoint - (textSize / 2).toPoint()
 
         // Create the text annotation
-        let annotation = TextAnnotation(bounds: .zero)
+        let annotation = TextAnnotation(bounds: .init(origin: origin, size: textSize))
         annotation.font = font
         annotation.contents = "Text"
-        annotation.bounds = .init(origin: .init(x: x, y: y), size: annotation.calculateTextSize())
+        annotation.fontColor = TextAnnotation.kColor
         page.addAnnotation(annotation)
+
     }
 
     func showEditTextView(annotation: TextAnnotation) {
@@ -224,12 +227,13 @@ extension PDFEditView {
 
         // Get the current annotation's position
         let currentBounds = annotation.bounds
-        let scaleFactor = min(pdfView.scaleFactor, 1)
+        let centerPoint = CGPoint(x: currentBounds.midX, y: currentBounds.midY)
+        let pointInPDFView = pdfView.convertBounds(annotation.bounds)
 
-        let editTextView = PDFEditTextView(annotationRect: pdfView.convertBounds(annotation.bounds))
+        let editTextView = PDFEditTextView(annotationRect: pointInPDFView)
         editTextView.textView.text = annotation.contents
         editTextView.textView.textColor = annotation.fontColor
-        editTextView.textView.font = annotation.font?.copyWith(scale: scaleFactor)
+        editTextView.textView.font = annotation.font
         editTextView.show(parent)
 
         page.removeAnnotation(annotation)
@@ -238,12 +242,18 @@ extension PDFEditView {
         }
 
         editTextView.onCompleted = { txtView in
-            annotation.contents = txtView.text
+            guard let text = txtView.text, let font = txtView.font else { return }
+            annotation.contents = text
             annotation.fontColor = txtView.textColor
-            annotation.font = txtView.font
+            annotation.font = font
+            
+            let maxWidth = pdfView.bounds.width
 
-            txtView.sizeToFit()
-            annotation.bounds = .init(origin: currentBounds.origin, size: (txtView.contentSize / pdfView.scaleFactor) + 12)
+            let newSize = UITextView.calculateContentSize(for: text,
+                                                          with: font,
+                                                          maxWidth: maxWidth)
+            let newCenter = centerPoint - newSize.toPoint() / 2
+            annotation.bounds = .init(origin: newCenter, size: newSize)
             page.addAnnotation(annotation)
         }
 
