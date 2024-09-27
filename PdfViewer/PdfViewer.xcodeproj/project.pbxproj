@@ -31,6 +31,7 @@
 		DE527ABE2C8E84C000521495 /* PDFSearchVc.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE527ABD2C8E84C000521495 /* PDFSearchVc.swift */; };
 		DE527AC02C8E857600521495 /* PDFSearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE527ABF2C8E857600521495 /* PDFSearchResultCell.swift */; };
 		DE6BF2002C918271004CECEC /* PDFViewer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6BF1FF2C918271004CECEC /* PDFViewer+Extension.swift */; };
+		DE9AA74B2CA682E30088C242 /* DrawConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9AA74A2CA682E30088C242 /* DrawConfigurationView.swift */; };
 		DEC576ED2CA3F5DA00BC7E0E /* PDFEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC576EC2CA3F5DA00BC7E0E /* PDFEditView.swift */; };
 /* End PBXBuildFile section */
 
@@ -79,6 +80,7 @@
 		DE527ABD2C8E84C000521495 /* PDFSearchVc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFSearchVc.swift; sourceTree = "<group>"; };
 		DE527ABF2C8E857600521495 /* PDFSearchResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFSearchResultCell.swift; sourceTree = "<group>"; };
 		DE6BF1FF2C918271004CECEC /* PDFViewer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PDFViewer+Extension.swift"; sourceTree = "<group>"; };
+		DE9AA74A2CA682E30088C242 /* DrawConfigurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawConfigurationView.swift; sourceTree = "<group>"; };
 		DEC576EC2CA3F5DA00BC7E0E /* PDFEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFEditView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -178,6 +180,7 @@
 				DE0482652C9BD75600CCBEB3 /* GestureRecognizer.swift */,
 				DEC576EC2CA3F5DA00BC7E0E /* PDFEditView.swift */,
 				DE135FD82CA50F960036DF16 /* PDFEditTextView.swift */,
+				DE9AA74A2CA682E30088C242 /* DrawConfigurationView.swift */,
 			);
 			path = PDF;
 			sourceTree = "<group>";
@@ -327,6 +330,7 @@
 				1C46F60C2C8B286100A60388 /* AppDelegate.swift in Sources */,
 				DE6BF2002C918271004CECEC /* PDFViewer+Extension.swift in Sources */,
 				DE0482662C9BD75600CCBEB3 /* GestureRecognizer.swift in Sources */,
+				DE9AA74B2CA682E30088C242 /* DrawConfigurationView.swift in Sources */,
 				1C46F6422C8B2E4800A60388 /* PDFViewControl.swift in Sources */,
 				DE0482622C99736000CCBEB3 /* PDFDocumentSideBar.swift in Sources */,
 				1C46F63C2C8B28B200A60388 /* PDFViewer.swift in Sources */,

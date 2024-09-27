@@ -18,6 +18,7 @@ protocol PDFDocumentSideBarDelegate: AnyObject {
 }
 
 class PDFDocumentSideBar: UIView {
+
     private var buttons: [PDFDocumentSideBarbuttons]
     private let buttonSize: CGFloat = 38
     private let spacing: CGFloat = 4

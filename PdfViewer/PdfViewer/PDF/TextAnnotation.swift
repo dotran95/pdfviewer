@@ -46,21 +46,29 @@ class Annotation: PDFAnnotation {
     }
 
     func resizeLeading(_ translation: CGPoint) {
+        let newWidth = bounds.width - translation.x
+        let newHeight = calculateHeight(newWidth) ?? bounds.height
         bounds = CGRect(x: bounds.origin.x + translation.x,
                         y: bounds.origin.y,
-                        width: bounds.width - translation.x,
-                        height: bounds.height)
+                        width: newWidth,
+                        height: newHeight)
     }
 
     func resizeTrailing(_ translation: CGPoint) {
+        let newWidth = bounds.width + translation.x
+        let newHeight = calculateHeight(newWidth) ?? bounds.height
         bounds = CGRect(x: bounds.origin.x,
                         y: bounds.origin.y,
-                        width: bounds.width + translation.x,
-                        height: bounds.height)
+                        width: newWidth,
+                        height: newHeight)
     }
 
     func move(_ translation: CGPoint) {
         bounds = bounds.offsetBy(dx: translation.x, dy: -translation.y)
+    }
+
+    func calculateHeight(_ maxWidth: CGFloat) -> CGFloat? {
+        return bounds.height
     }
 }
 
@@ -88,18 +96,31 @@ class TextAnnotation: Annotation {
         interiorColor = .clear
     }
 
-    func calculateTextSize() -> CGSize {
-        let maxWidth: CGFloat = bounds.width.isZero ? CGFloat.greatestFiniteMagnitude:bounds.width
-        let maxSize = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
+    override func calculateHeight(_ maxWidth: CGFloat) -> CGFloat? {
+        guard let text = contents, let font = font else {
+            return nil
+        }
+        let size = TextAnnotation.calculateContentSize(for: text,
+                                                      with: font,
+                                                      maxWidth: maxWidth)
+        return size.height
+    }
 
-        let attributes = [NSAttributedString.Key.font: font]
-        let textRect = (contents ?? "").boundingRect(with: maxSize,
-                                                     options: .usesLineFragmentOrigin,
-                                                     attributes: attributes as [NSAttributedString.Key : Any],
-                                                     context: nil)
+    static func calculateContentSize(for text: String,
+                                     with font: UIFont,
+                                     maxWidth: CGFloat) -> CGSize {
+        let textView = UITextView()
+        textView.text = text
+        textView.font = font
+        textView.frame = CGRect(x: 0, y: 0, width: maxWidth, height: 1000)
+        textView.isScrollEnabled = false
+        textView.autocorrectionType = .no
+        textView.spellCheckingType = .no
+        textView.textContainerInset = .zero
+        // Force the textView to layout its content to get the correct contentSize
+        textView.sizeToFit()
 
-        let width = bounds.width < textRect.width ? textRect.width:maxWidth
-        return CGSize(width: ceil(width + 30), height: ceil(textRect.height + 20))
+        return textView.contentSize
     }
 
 }

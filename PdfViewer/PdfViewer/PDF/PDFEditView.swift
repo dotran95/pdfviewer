@@ -18,6 +18,11 @@ enum PanAnnotationTransitionType {
 
 class PDFEditView {
 
+    // MARK: - Constants and Computed
+    private var colorPickerHeight: CGFloat = 300.0
+    private var drawConfigureViewHeight: CGFloat = 100.0
+
+    // MARK: - Elements
     weak var parent: PDFViewer?
 
     var pdfView: PDFView? {
@@ -37,6 +42,14 @@ class PDFEditView {
         let panGesture = PanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         return panGesture
     }()
+
+    private lazy var drawConfigureView : DrawConfigurationView = {
+        let drawConfigureView = DrawConfigurationView()
+        drawConfigureView.delegate = self
+        drawConfigureView.isHidden = true
+        return drawConfigureView
+    }()
+
 
     var selectedAnnotation: Annotation?
 
@@ -58,34 +71,22 @@ class PDFEditView {
         }
         sidebarView.delegate = self
 
+        parent.view.addSubview(drawConfigureView)
+        drawConfigureView.snp.makeConstraints { make in
+            make.horizontalEdges.equalTo(parent.view)
+            make.height.equalTo(drawConfigureViewHeight)
+            make.bottom.equalTo(parent.view)
+        }
+
         addGestureRecognizers()
     }
 
     func removeSideBar() {
         sidebarView.removeFromSuperview()
         removeGestureRecognizers()
-        removeCurrentSelectedAnnotation()
+        removeSelectionAnnotation()
     }
 
-}
-
-// MARK: - PDFDocumentSideBarDelegate
-extension PDFEditView: PDFDocumentSideBarDelegate {
-
-    func onClick(_ type: PDFDocumentSideBarbuttons) {
-        switch type {
-        case .text:
-            addTextAnnotation()
-            break
-        default:
-            break
-        }
-    }
-
-}
-
-// MARK: - Private funcs
-extension PDFEditView {
     private func addGestureRecognizers() {
         guard let parent = parent else { return }
         // Add tap gesture recognizer to detect touches
@@ -111,7 +112,7 @@ extension PDFEditView {
                customAnnotation.bounds.contains(pagePoint) {
 
                 if selectedAnnotation?.hashValue != customAnnotation.hashValue {
-                    setCurrentSelectedAnnotation(customAnnotation)
+                    setSelectiondAnnotation(customAnnotation)
                     return
                 }
                 if let textAnnotation = customAnnotation as? TextAnnotation {
@@ -121,7 +122,7 @@ extension PDFEditView {
                 return
             }
         }
-        removeCurrentSelectedAnnotation()
+        removeSelectionAnnotation()
     }
 
     @objc
@@ -163,17 +164,37 @@ extension PDFEditView {
         case .resizeWidthTrailing:
             annotation.resizeTrailing(translation)
         case .none:
-            removeCurrentSelectedAnnotation()
+            removeSelectionAnnotation()
             return
         }
 
         gesture.setTranslation(.zero, in: gesture.view)
     }
 
-    private func setCurrentSelectedAnnotation(_ annotation: Annotation) {
+}
+
+// MARK: - PDFDocumentSideBarDelegate
+extension PDFEditView: PDFDocumentSideBarDelegate {
+
+    func onClick(_ type: PDFDocumentSideBarbuttons) {
+        switch type {
+        case .text:
+            addTextAnnotation()
+            break
+        default:
+            break
+        }
+    }
+
+}
+
+// MARK: - Private funcs
+extension PDFEditView {
+
+    private func setSelectiondAnnotation(_ annotation: Annotation) {
         guard let pdfView = pdfView else { return }
         // Remove old annotation
-        removeCurrentSelectedAnnotation()
+        removeSelectionAnnotation()
 
         annotation.selected = true
         pdfView.currentPage?.addAnnotation(annotation)
@@ -182,9 +203,11 @@ extension PDFEditView {
         pdfView.disableScroll(true)
         pdfView.minScaleFactor = pdfView.scaleFactor
         pdfView.maxScaleFactor = pdfView.scaleFactor
+
+        drawConfigureView.update(true, type: selectedAnnotation is TextAnnotation ? .text:.none)
     }
 
-    private func removeCurrentSelectedAnnotation() {
+    private func removeSelectionAnnotation() {
         guard let selecte = selectedAnnotation, let pdfView = pdfView, let config = parent?.config else { return }
         selecte.selected = false
         pdfView.currentPage?.addAnnotation(selecte)
@@ -192,10 +215,13 @@ extension PDFEditView {
         pdfView.minScaleFactor = config.minScaleFactor
         pdfView.maxScaleFactor = config.maxScaleFactor
         pdfView.disableScroll(false)
+
+        drawConfigureView.update(false, type: .none)
     }
 
 }
 
+// MARK: - TextAnnotation
 extension PDFEditView {
     private func addTextAnnotation() {
         guard let pdfView = pdfView, let page = pdfView.currentPage else { return }
@@ -207,10 +233,8 @@ extension PDFEditView {
         let maxWidth = pdfView.bounds.width
         
         // Determine the centered position
-        let textSize: CGSize = UITextView.calculateContentSize(for: "Text",
-                                                       with: font,
-                                                       maxWidth: maxWidth)
-        
+        let textSize: CGSize = TextAnnotation.calculateContentSize(for: "Text", with: font, maxWidth: maxWidth)
+
         let origin = centerPoint - (textSize / 2).toPoint()
 
         // Create the text annotation
@@ -230,7 +254,7 @@ extension PDFEditView {
         let centerPoint = CGPoint(x: currentBounds.midX, y: currentBounds.midY)
         let pointInPDFView = pdfView.convertBounds(annotation.bounds)
 
-        let editTextView = PDFEditTextView(annotationRect: pointInPDFView)
+        let editTextView = PDFEditTextView(annotationRect: CGRect(origin: pointInPDFView.origin, size: pointInPDFView.size / pdfView.scaleFactor))
         editTextView.textView.text = annotation.contents
         editTextView.textView.textColor = annotation.fontColor
         editTextView.textView.font = annotation.font
@@ -249,13 +273,20 @@ extension PDFEditView {
             
             let maxWidth = pdfView.bounds.width
 
-            let newSize = UITextView.calculateContentSize(for: text,
-                                                          with: font,
-                                                          maxWidth: maxWidth)
+            let newSize = TextAnnotation.calculateContentSize(for: text, with: font, maxWidth: maxWidth)
             let newCenter = centerPoint - newSize.toPoint() / 2
             annotation.bounds = .init(origin: newCenter, size: newSize)
             page.addAnnotation(annotation)
         }
 
+    }
+}
+
+extension PDFEditView: DrawConfigurationViewDelegate {
+    func didSelectColor(_ color: UIColor) {
+        if let textAnnotation = selectedAnnotation as? TextAnnotation {
+            textAnnotation.fontColor = color
+            return
+        }
     }
 }

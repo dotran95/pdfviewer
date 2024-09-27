@@ -25,6 +25,12 @@ class PDFEditTextView: UIViewController, UITextViewDelegate {
         return txtView
     }()
 
+    private let container: UIView = {
+        let v = UIView()
+        v.backgroundColor = .clear
+        return v
+    }()
+
     var onCompleted: ((UITextView) -> Void)?
 
     // Initializer
@@ -66,8 +72,20 @@ class PDFEditTextView: UIViewController, UITextViewDelegate {
     // Setup the text view and its constraints
     private func setupView(_ initFrame: CGRect) {
         view.backgroundColor = .black.withAlphaComponent(0)
-        view.addSubview(textView)
-        textView.frame = initFrame
+        view.addSubview(container)
+
+        container.snp.makeConstraints { make in
+            make.horizontalEdges.equalTo(view)
+            make.top.equalTo(view)
+            make.bottom.equalTo(view)
+        }
+
+        container.addSubview(textView)
+        textView.frame.size = initFrame.size
+        textView.snp.makeConstraints { make in
+            make.center.equalTo(container)
+        }
+//        textView.frame = initFrame
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -91,17 +109,13 @@ class PDFEditTextView: UIViewController, UITextViewDelegate {
             let keyboardHeight = keyboardFrame.cgRectValue.height
             let animationDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval ?? 0.25
 
-            let frame = view.frame
-            let availabelSpace = UIScreen.main.bounds.height - keyboardHeight
-            let newSize = textView.frame.size
-            let newOrigin: CGPoint = .init(x: frame.midX - newSize.width / 2, y: (availabelSpace - textView.frame.height - frame.minY) / 2)
+            container.snp.updateConstraints { make in
+                make.bottom.equalTo(view).inset(keyboardHeight)
+            }
 
-            UIView.animate(withDuration: animationDuration, animations: {
-                self.textView.frame = CGRect(origin: newOrigin, size: newSize)
-                self.view.backgroundColor = .black.withAlphaComponent(0.5)
-            }) { _ in
-                self.textView.frame = CGRect(origin: .init(x: 0, y: newOrigin.y),
-                                             size: .init(width: frame.width, height: newSize.height))
+            UIView.animate(withDuration: animationDuration) { [self] in
+                textView.center = .init(x: container.center.x, y: container.center.y - keyboardHeight)
+                view.backgroundColor = .black.withAlphaComponent(0.5)
             }
         }
     }
@@ -116,6 +130,7 @@ class PDFEditTextView: UIViewController, UITextViewDelegate {
 
         // Adjust the frame size considering padding
         textView.frame.size = CGSize(width: fixedWidth, height: newSize.height + 20)
+        textView.center = container.center
     }
 
     // Update the view size when the text changes

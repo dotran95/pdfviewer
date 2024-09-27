@@ -166,22 +166,3 @@ extension UIFont {
         return copyWith(fontSize: pointSize * scale)
     }
 }
-
-extension UITextView {
-    static func calculateContentSize(for text: String, 
-                                     with font: UIFont,
-                                     maxWidth: CGFloat) -> CGSize {
-        let textView = UITextView()
-        textView.text = text
-        textView.font = font
-        textView.frame = CGRect(x: 0, y: 0, width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
-        textView.isScrollEnabled = false
-        textView.autocorrectionType = .no
-        textView.spellCheckingType = .no
-        textView.textContainerInset = .init(top: 3, left: 12, bottom: 6, right: 12)
-        // Force the textView to layout its content to get the correct contentSize
-        textView.sizeToFit()
-        
-        return textView.contentSize
-    }
-}
