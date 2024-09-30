@@ -11,11 +11,17 @@ class Annotation: PDFAnnotation {
 
     private var borderColor: UIColor = .blue
     private var borderWidth: CGFloat = 1.0
-    private var circleRadius: CGFloat = 6
+    private var circleRadius: CGFloat = 3
     var selected: Bool = false
 
     override func draw(with box: PDFDisplayBox, in context: CGContext) {
         super.draw(with: box, in: context)
+
+        print("=====")
+        for (k, v) in annotationKeyValues {
+            print("Key: \(k) \(v)")
+        }
+        print("=====e")
 
         if selected {
             context.setStrokeColor(borderColor.cgColor)
@@ -63,6 +69,17 @@ class Annotation: PDFAnnotation {
                         height: newHeight)
     }
 
+    func resize() {
+        let newWidth = bounds.width
+        let center = CGPoint(x: bounds.midX, y: bounds.midY)
+        let newHeight = calculateHeight(newWidth) ?? bounds.height
+
+        bounds = CGRect(x: center.x - newWidth / 2,
+                        y: center.y - newHeight / 2,
+                        width: newWidth,
+                        height: newHeight)
+    }
+
     func move(_ translation: CGPoint) {
         bounds = bounds.offsetBy(dx: translation.x, dy: -translation.y)
     }
@@ -79,7 +96,7 @@ class TextAnnotation: Annotation {
     static let kBackground = UIColor.clear
 
     init(bounds: CGRect) {
-        super.init(bounds: bounds, forType: PDFAnnotationSubtype(rawValue: PDFAnnotationSubtype.freeText.rawValue), withProperties: nil)
+        super.init(bounds: bounds, forType: .freeText, withProperties: nil)
         config()
     }
 

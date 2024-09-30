@@ -32,6 +32,7 @@
 		DE527AC02C8E857600521495 /* PDFSearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE527ABF2C8E857600521495 /* PDFSearchResultCell.swift */; };
 		DE6BF2002C918271004CECEC /* PDFViewer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6BF1FF2C918271004CECEC /* PDFViewer+Extension.swift */; };
 		DE9AA74B2CA682E30088C242 /* DrawConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9AA74A2CA682E30088C242 /* DrawConfigurationView.swift */; };
+		DE9AA74D2CAA961F0088C242 /* TextSettingPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9AA74C2CAA961F0088C242 /* TextSettingPopoverView.swift */; };
 		DEC576ED2CA3F5DA00BC7E0E /* PDFEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC576EC2CA3F5DA00BC7E0E /* PDFEditView.swift */; };
 /* End PBXBuildFile section */
 
@@ -81,6 +82,7 @@
 		DE527ABF2C8E857600521495 /* PDFSearchResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFSearchResultCell.swift; sourceTree = "<group>"; };
 		DE6BF1FF2C918271004CECEC /* PDFViewer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PDFViewer+Extension.swift"; sourceTree = "<group>"; };
 		DE9AA74A2CA682E30088C242 /* DrawConfigurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawConfigurationView.swift; sourceTree = "<group>"; };
+		DE9AA74C2CAA961F0088C242 /* TextSettingPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSettingPopoverView.swift; sourceTree = "<group>"; };
 		DEC576EC2CA3F5DA00BC7E0E /* PDFEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFEditView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -181,6 +183,7 @@
 				DEC576EC2CA3F5DA00BC7E0E /* PDFEditView.swift */,
 				DE135FD82CA50F960036DF16 /* PDFEditTextView.swift */,
 				DE9AA74A2CA682E30088C242 /* DrawConfigurationView.swift */,
+				DE9AA74C2CAA961F0088C242 /* TextSettingPopoverView.swift */,
 			);
 			path = PDF;
 			sourceTree = "<group>";
@@ -336,6 +339,7 @@
 				1C46F63C2C8B28B200A60388 /* PDFViewer.swift in Sources */,
 				1C367AAB2C8B6F5A006CEB0E /* PDFPage+Bookmark.swift in Sources */,
 				DE527ABE2C8E84C000521495 /* PDFSearchVc.swift in Sources */,
+				DE9AA74D2CAA961F0088C242 /* TextSettingPopoverView.swift in Sources */,
 				1C367AA92C8B560E006CEB0E /* PDFBookmarkAnnotation.swift in Sources */,
 				DEC576ED2CA3F5DA00BC7E0E /* PDFEditView.swift in Sources */,
 				1C46F60E2C8B286100A60388 /* SceneDelegate.swift in Sources */,
@@ -530,6 +534,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -558,6 +563,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

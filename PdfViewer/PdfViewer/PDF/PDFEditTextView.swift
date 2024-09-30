@@ -82,10 +82,10 @@ class PDFEditTextView: UIViewController, UITextViewDelegate {
 
         container.addSubview(textView)
         textView.frame.size = initFrame.size
-        textView.snp.makeConstraints { make in
-            make.center.equalTo(container)
-        }
-//        textView.frame = initFrame
+//        textView.snp.makeConstraints { make in
+//            make.center.equalTo(container)
+//        }
+        textView.frame = initFrame
     }
 
     override func viewDidAppear(_ animated: Bool) {

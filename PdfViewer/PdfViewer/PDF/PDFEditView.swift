@@ -43,12 +43,7 @@ class PDFEditView {
         return panGesture
     }()
 
-    private lazy var drawConfigureView : DrawConfigurationView = {
-        let drawConfigureView = DrawConfigurationView()
-        drawConfigureView.delegate = self
-        drawConfigureView.isHidden = true
-        return drawConfigureView
-    }()
+    private var drawConfigureView : DrawConfigurationView?
 
 
     var selectedAnnotation: Annotation?
@@ -70,13 +65,6 @@ class PDFEditView {
             make.width.equalTo(40)
         }
         sidebarView.delegate = self
-
-        parent.view.addSubview(drawConfigureView)
-        drawConfigureView.snp.makeConstraints { make in
-            make.horizontalEdges.equalTo(parent.view)
-            make.height.equalTo(drawConfigureViewHeight)
-            make.bottom.equalTo(parent.view)
-        }
 
         addGestureRecognizers()
     }
@@ -204,7 +192,7 @@ extension PDFEditView {
         pdfView.minScaleFactor = pdfView.scaleFactor
         pdfView.maxScaleFactor = pdfView.scaleFactor
 
-        drawConfigureView.update(true, type: selectedAnnotation is TextAnnotation ? .text:.none)
+        showDrawConfigView()
     }
 
     private func removeSelectionAnnotation() {
@@ -216,9 +204,28 @@ extension PDFEditView {
         pdfView.maxScaleFactor = config.maxScaleFactor
         pdfView.disableScroll(false)
 
-        drawConfigureView.update(false, type: .none)
+        drawConfigureView?.willMove(toParent: nil)
+        drawConfigureView?.view.removeFromSuperview()
+        drawConfigureView?.removeFromParent()
+        drawConfigureView = nil
     }
 
+    private func showDrawConfigView() {
+        guard let parent = parent else { return }
+
+        let drawVc = DrawConfigurationView()
+        drawVc.delegate = self
+        parent.addChild(drawVc)
+        parent.view.addSubview(drawVc.view)
+        drawVc.view.snp.makeConstraints { make in
+            make.horizontalEdges.equalTo(parent.view)
+            make.height.equalTo(drawConfigureViewHeight)
+            make.bottom.equalTo(parent.view)
+        }
+        drawVc.didMove(toParent: parent)
+        drawVc.type = selectedAnnotation is TextAnnotation ? .text:.none
+        drawConfigureView = drawVc
+    }
 }
 
 // MARK: - TextAnnotation
@@ -241,6 +248,7 @@ extension PDFEditView {
         let annotation = TextAnnotation(bounds: .init(origin: origin, size: textSize))
         annotation.font = font
         annotation.contents = "Text"
+        annotation.widgetStringValue = "Text"
         annotation.fontColor = TextAnnotation.kColor
         page.addAnnotation(annotation)
 
@@ -268,6 +276,7 @@ extension PDFEditView {
         editTextView.onCompleted = { txtView in
             guard let text = txtView.text, let font = txtView.font else { return }
             annotation.contents = text
+            annotation.widgetStringValue = text
             annotation.fontColor = txtView.textColor
             annotation.font = font
             
@@ -283,10 +292,30 @@ extension PDFEditView {
 }
 
 extension PDFEditView: DrawConfigurationViewDelegate {
+
     func didSelectColor(_ color: UIColor) {
         if let textAnnotation = selectedAnnotation as? TextAnnotation {
             textAnnotation.fontColor = color
             return
         }
+    }
+
+    func didSelectFontSize(_ fontSize: CGFloat) {
+        if let textAnnotation = selectedAnnotation as? TextAnnotation {
+            textAnnotation.font = textAnnotation.font?.copyWith(fontSize: fontSize)
+            textAnnotation.resize()
+            return
+        }
+    }
+
+    func currentFont() -> UIFont {
+        return selectedAnnotation?.font ?? UIFont.systemFont(ofSize: 20)
+    }
+
+    func currentColor() -> UIColor {
+        if let textAnnotation = selectedAnnotation as? TextAnnotation {
+            return selectedAnnotation?.fontColor ?? .black
+        }
+        return .black
     }
 }

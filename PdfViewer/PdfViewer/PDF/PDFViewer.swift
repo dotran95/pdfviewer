@@ -59,6 +59,7 @@ class PDFViewer: UIViewController, PDFDocumentDelegate {
         pdfView.document = document
         config.minScaleFactor = pdfView.minScaleFactor
         config.maxScaleFactor = pdfView.maxScaleFactor
+        searchVc.document = document
     }
 
     private func makeUIs() {

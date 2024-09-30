@@ -9,6 +9,10 @@ import UIKit
 
 protocol DrawConfigurationViewDelegate: AnyObject {
     func didSelectColor(_ color: UIColor)
+    func didSelectFontSize(_ fontSize: CGFloat)
+    func currentFont() -> UIFont
+    func currentColor() -> UIColor
+
 }
 
 enum DrawConfigurationButton: Int {
@@ -18,6 +22,7 @@ enum DrawConfigurationButton: Int {
     case greenColor
     case yellowColor
     case redColor
+    case pickerColor
     case annotations
 
     var color: UIColor {
@@ -45,64 +50,50 @@ enum DrawAnnotationType {
     case none
 }
 
-class DrawConfigurationView: UIView {
+class DrawConfigurationView: UIViewController {
 
     // MARK: - Constants and Computed
 
-    private let buttonWidth: CGFloat = 40
+    private let buttonWidth: CGFloat = 30
 
-    private let buttons: [DrawConfigurationButton] = [.settingOptions, .blackColor, .blueColor, .greenColor, .yellowColor, .redColor]
-
+    private let buttons: [DrawConfigurationButton] = [
+        .settingOptions,
+        .blackColor,
+        .blueColor,
+        .greenColor,
+        .yellowColor,
+        .redColor,
+        .pickerColor
+    ]
 
     private let backgroundViewColor: UIColor = .white
 
     // MARK: - UIElements
-
+    private var container: UIStackView!
 
     weak var delegate: DrawConfigurationViewDelegate?
 
-    private var type: DrawAnnotationType = .none
+    var type: DrawAnnotationType = .none
 
     // MARK: - Initialize
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override func viewDidLoad() {
+        super.viewDidLoad()
         setupInitialState()
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func update(_ show: Bool, type: DrawAnnotationType) {
-        self.isHidden = !show
-        self.type = type
-    }
-
-    // MARK: - Lifecycle
-
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-    }
-
-    override func draw(_ rect: CGRect) {
-        super.draw(rect)
-    }
-
     private func setupInitialState() {
-        backgroundColor = .gray.withAlphaComponent(0.5)
+        view.backgroundColor = backgroundViewColor
 
-        let stackView = UIStackView(arrangedSubviews: buttons.map({ createButton($0) }))
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.spacing = 10 // Space between views
+        container = UIStackView(arrangedSubviews: buttons.map({ createButton($0) }))
+        container.axis = .horizontal
+        container.alignment = .center
+        container.spacing = 10 // Space between views
 
-        addSubview(stackView)
+        view.addSubview(container)
 
-        stackView.snp.makeConstraints { make in
-            make.top.equalTo(self).inset(20)
-            make.centerX.equalTo(self.safeAreaLayoutGuide)
+        container.snp.makeConstraints { make in
+            make.top.equalTo(view).inset(20)
+            make.centerX.equalTo(view.safeAreaLayoutGuide)
         }
 
     }
@@ -122,7 +113,35 @@ class DrawConfigurationView: UIView {
         case .settingOptions:
             button.setTitle("Aa", for: .normal)
             button.setTitleColor(.black, for: .normal)
-            button.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
+            button.titleLabel?.font = .systemFont(ofSize: 17)
+            break
+        case .pickerColor:
+            button.backgroundColor = nil
+            // Tạo gradient layer cho border
+            let gradientLayer = CAGradientLayer()
+            gradientLayer.frame = button.bounds
+            gradientLayer.colors = [
+                UIColor.red.cgColor,
+                UIColor.orange.cgColor,
+                UIColor.yellow.cgColor,
+                UIColor.green.cgColor,
+                UIColor.blue.cgColor,
+                UIColor.purple.cgColor
+            ]
+            gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.5) // Gradient bắt đầu từ trái sang phải
+            gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.5)
+
+            // Tạo shape layer với đường viền cho UIButton
+            let shapeLayer = CAShapeLayer()
+            shapeLayer.lineWidth = 5
+            shapeLayer.path = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: buttonWidth, height: buttonWidth), cornerRadius: buttonWidth / 2).cgPath
+            shapeLayer.fillColor = UIColor.clear.cgColor // Làm trong suốt nền
+            shapeLayer.strokeColor = UIColor.black.cgColor // Placeholder cho viền (thực ra sẽ là gradient)
+            gradientLayer.mask = shapeLayer // Sử dụng gradient làm viền
+
+            // Thêm gradient vào nút
+            button.layer.addSublayer(gradientLayer)
+            print(button.layer.sublayers)
             break
         default:
             break
@@ -142,6 +161,9 @@ class DrawConfigurationView: UIView {
         case .settingOptions:
             showTextSettingPopover(sender)
             break
+        case .pickerColor:
+            presentColorPicker(sender)
+            break
         default:
             delegate?.didSelectColor(type.color)
         }
@@ -151,65 +173,56 @@ class DrawConfigurationView: UIView {
 
 // MARK: - Actions
 
-extension DrawConfigurationView {
+extension DrawConfigurationView: UIPopoverPresentationControllerDelegate, UIColorPickerViewControllerDelegate {
     private func showTextSettingPopover(_ sender: UIButton) {
-        let popover = TextSettingPopoverView(frame: CGRect(x: 0, y: 0, width: 200, height: 100)) // Set size of popover
-        popover.center = sender.center // Center the popover over the button
-        popover.translatesAutoresizingMaskIntoConstraints = false
+        let popoverContent = TextSettingPopoverView() // Set size of popover
+        popoverContent.modalPresentationStyle = .popover
 
-        // Position the popover
-        if let superview = sender.superview {
-            superview.addSubview(popover)
-            popover.center = CGPoint(x: sender.center.x, y: sender.center.y - sender.bounds.height - 50) // Adjust position
+        // Configure popover presentation controller
+        if let popover = popoverContent.popoverPresentationController {
+            popover.sourceView = sender // The button that was tapped
+            popover.sourceRect = sender.bounds // The button's bounds
+            popover.permittedArrowDirections = .any // Arrow direction can be any
+            popover.delegate = self
         }
-    }
-}
 
+        popoverContent.onSelectedFontSize = { [weak self] fontSize in
+            self?.delegate?.didSelectFontSize(fontSize)
+        }
+        popoverContent.currentFontSize = Float(delegate?.currentFont().pointSize ?? 20)
 
-extension DrawConfigurationView {
-
-    func drawCircle() {
-
-//        let rect = colorPickerButton.frame.insetBy(dx: -2.0, dy: -2.0)
-//        let path = UIBezierPath(roundedRect: rect, cornerRadius: rect.width * 0.5)
-//
-//        let newLayer = CAShapeLayer()
-//        newLayer.path = path.cgPath
-//        newLayer.fillColor = UIColor.clear.cgColor
-//        newLayer.strokeColor = pickedColor.cgColor
-//
-//        roundedLayer?.removeFromSuperlayer()
-//        layer.addSublayer(newLayer)
-//        roundedLayer = newLayer
-    }
-}
-
-class TextSettingPopoverView: UIView {
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupView()
+        // Present the popover
+        present(popoverContent, animated: true)
     }
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupView()
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return .none
     }
 
-    private func setupView() {
-        backgroundColor = .white
-        layer.cornerRadius = 8
+    private func presentColorPicker(_ sender: UIButton) {
+        let colorPicker = UIColorPickerViewController()
+        colorPicker.title = "Select Color"
+        colorPicker.supportsAlpha = false
+        colorPicker.delegate = self
+        colorPicker.modalPresentationStyle = .popover
+        colorPicker.selectedColor = delegate?.currentColor() ?? .black
 
-        // Add a label or any other UI elements here
-        let label = UILabel()
-        label.text = "This is a popover!"
-        label.translatesAutoresizingMaskIntoConstraints = false
+        // Configure popover presentation controller
+        if let popover = colorPicker.popoverPresentationController {
+            popover.sourceView = sender // The button that was tapped
+            popover.sourceRect = sender.bounds // The button's bounds
+            popover.permittedArrowDirections = .any // Arrow direction can be any
+            popover.delegate = self
+        }
+        self.present(colorPicker, animated: true)
+    }
 
-        addSubview(label)
+    func colorPickerViewController(_ viewController: UIColorPickerViewController, didSelect color: UIColor, continuously: Bool) {
+        delegate?.didSelectColor(color)
+        container.arrangedSubviews.first(where: { $0.tag == DrawConfigurationButton.pickerColor.rawValue })?.backgroundColor = color
 
-        NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: centerYAnchor)
-        ])
+        if !continuously {
+            viewController.dismiss(animated: true)
+        }
     }
 }
