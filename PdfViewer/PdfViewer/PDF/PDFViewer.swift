@@ -118,12 +118,12 @@ extension PDFViewer: PDFViewControlDelegate {
         return pdfView.currentPage?.bookmarked ?? false
     }
 
-    func search() {
+    func showSearch() {
         mode = .view
         present(searchVc, animated: true)
     }
 
-    func edit() {
+    func showEditMode() {
         switch mode {
         case .edit:
             mode = .view
@@ -133,6 +133,13 @@ extension PDFViewer: PDFViewControlDelegate {
             break
         }
     }
+
+    func showOutline() {
+        mode = .view
+        guard let outline = pdfView.document?.outlineRoot else { return }
+        let vc = PDFOutlineTableVc(outline: outline, delegate: self)
+        present(vc, animated: true)
+    }
 }
 
 extension PDFViewer: PDFSearchDelegate {
@@ -141,5 +148,11 @@ extension PDFViewer: PDFSearchDelegate {
             self.pdfView.go(to: selection)
             self.pdfView.setCurrentSelection(selection, animate: true)
         }
+    }
+}
+
+extension PDFViewer: OutlineDelegate {
+    func goTo(page: PDFPage) {
+        pdfView.go(to: page)
     }
 }

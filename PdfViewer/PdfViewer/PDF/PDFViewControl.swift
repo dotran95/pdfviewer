@@ -9,8 +9,9 @@ import UIKit
 
 protocol PDFViewControlDelegate: AnyObject {
     func bookmark() -> Bool
-    func search()
-    func edit()
+    func showSearch()
+    func showEditMode()
+    func showOutline()
 }
 
 class PDFViewControl: UIView {
@@ -18,6 +19,7 @@ class PDFViewControl: UIView {
     @IBOutlet weak private var editDocumentButton: UIButton!
     @IBOutlet weak private var bookmarkButton: UIButton!
     @IBOutlet weak private var searchButton: UIButton!
+    @IBOutlet weak private var outlineMenuButton: UIButton!
     private let bookmarkImage = UIImage(systemName: "bookmark")
     private let bookmarkedImage = UIImage(systemName: "bookmark.fill")
 
@@ -69,11 +71,14 @@ class PDFViewControl: UIView {
     }
 
     @IBAction private func searchAction(_ sender: UIButton) {
-        delegate?.search()
+        delegate?.showSearch()
     }
 
     @IBAction private func editAction(_ sender: UIButton) {
-        delegate?.edit()
+        delegate?.showEditMode()
+    }
+    @IBAction func outlineMenuAction(_ sender: UIButton) {
+        delegate?.showOutline()
     }
 }
 

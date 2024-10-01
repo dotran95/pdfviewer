@@ -33,6 +33,7 @@
 		DE6BF2002C918271004CECEC /* PDFViewer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6BF1FF2C918271004CECEC /* PDFViewer+Extension.swift */; };
 		DE9AA74B2CA682E30088C242 /* DrawConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9AA74A2CA682E30088C242 /* DrawConfigurationView.swift */; };
 		DE9AA74D2CAA961F0088C242 /* TextSettingPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9AA74C2CAA961F0088C242 /* TextSettingPopoverView.swift */; };
+		DE9D04EB2CAB879A0098C036 /* PDFOutlineTableVc.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9D04EA2CAB879A0098C036 /* PDFOutlineTableVc.swift */; };
 		DEC576ED2CA3F5DA00BC7E0E /* PDFEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC576EC2CA3F5DA00BC7E0E /* PDFEditView.swift */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +84,7 @@
 		DE6BF1FF2C918271004CECEC /* PDFViewer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PDFViewer+Extension.swift"; sourceTree = "<group>"; };
 		DE9AA74A2CA682E30088C242 /* DrawConfigurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawConfigurationView.swift; sourceTree = "<group>"; };
 		DE9AA74C2CAA961F0088C242 /* TextSettingPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSettingPopoverView.swift; sourceTree = "<group>"; };
+		DE9D04EA2CAB879A0098C036 /* PDFOutlineTableVc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFOutlineTableVc.swift; sourceTree = "<group>"; };
 		DEC576EC2CA3F5DA00BC7E0E /* PDFEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFEditView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -184,6 +186,7 @@
 				DE135FD82CA50F960036DF16 /* PDFEditTextView.swift */,
 				DE9AA74A2CA682E30088C242 /* DrawConfigurationView.swift */,
 				DE9AA74C2CAA961F0088C242 /* TextSettingPopoverView.swift */,
+				DE9D04EA2CAB879A0098C036 /* PDFOutlineTableVc.swift */,
 			);
 			path = PDF;
 			sourceTree = "<group>";
@@ -345,6 +348,7 @@
 				1C46F60E2C8B286100A60388 /* SceneDelegate.swift in Sources */,
 				DE527AC02C8E857600521495 /* PDFSearchResultCell.swift in Sources */,
 				DE135FD92CA50F960036DF16 /* PDFEditTextView.swift in Sources */,
+				DE9D04EB2CAB879A0098C036 /* PDFOutlineTableVc.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

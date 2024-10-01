@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -12,6 +13,7 @@
             <connections>
                 <outlet property="bookmarkButton" destination="x7k-mX-XBO" id="9MS-x4-tyt"/>
                 <outlet property="editDocumentButton" destination="IRf-Bo-k27" id="DCO-bR-PQb"/>
+                <outlet property="outlineMenuButton" destination="bCp-uJ-UhS" id="xew-Ua-A3c"/>
                 <outlet property="searchButton" destination="Bua-yV-aNm" id="q8R-tc-nkf"/>
             </connections>
         </placeholder>
@@ -76,16 +78,36 @@
                         <action selector="editAction:" destination="-1" eventType="touchUpInside" id="47v-Tp-1K1"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bCp-uJ-UhS">
+                    <rect key="frame" x="202.33333333333334" y="0.0" width="51" height="70"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain">
+                        <imageReference key="image" image="list.bullet" catalog="system" symbolScale="large" renderingMode="hierarchical-single">
+                            <hierarchicalColors>
+                                <color systemColor="labelColor"/>
+                                <color systemColor="secondaryLabelColor"/>
+                                <color systemColor="tertiaryLabelColor"/>
+                            </hierarchicalColors>
+                        </imageReference>
+                        <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage"/>
+                    </buttonConfiguration>
+                    <connections>
+                        <action selector="outlineMenuAction:" destination="-1" eventType="touchUpInside" id="yTP-cX-W7m"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="IRf-Bo-k27" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="1Q6-FY-8ah"/>
                 <constraint firstItem="x7k-mX-XBO" firstAttribute="leading" secondItem="Bua-yV-aNm" secondAttribute="trailing" id="25m-ol-gZh"/>
+                <constraint firstItem="bCp-uJ-UhS" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="4qi-8k-JF8"/>
                 <constraint firstAttribute="bottom" secondItem="Bua-yV-aNm" secondAttribute="bottom" id="BJj-KE-gsG"/>
                 <constraint firstItem="Bua-yV-aNm" firstAttribute="leading" secondItem="IRf-Bo-k27" secondAttribute="trailing" id="VIW-EC-flc"/>
                 <constraint firstAttribute="bottom" secondItem="x7k-mX-XBO" secondAttribute="bottom" id="XpV-pG-Q3j"/>
                 <constraint firstItem="Bua-yV-aNm" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="YuB-qU-3bc"/>
+                <constraint firstItem="IRf-Bo-k27" firstAttribute="leading" secondItem="bCp-uJ-UhS" secondAttribute="trailing" id="ZIC-6u-HmJ"/>
                 <constraint firstAttribute="bottom" secondItem="IRf-Bo-k27" secondAttribute="bottom" id="bEi-Na-TIn"/>
+                <constraint firstAttribute="bottom" secondItem="bCp-uJ-UhS" secondAttribute="bottom" id="xiL-R5-RBt"/>
                 <constraint firstItem="x7k-mX-XBO" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="z3c-ff-ozh"/>
                 <constraint firstAttribute="trailing" secondItem="x7k-mX-XBO" secondAttribute="trailing" constant="10" id="zNV-zV-x83"/>
             </constraints>
@@ -95,6 +117,7 @@
     </objects>
     <resources>
         <image name="bookmark.fill" catalog="system" width="110" height="128"/>
+        <image name="list.bullet" catalog="system" width="128" height="87"/>
         <image name="magnifyingglass" catalog="system" width="128" height="117"/>
         <image name="pencil.tip.crop.circle" catalog="system" width="128" height="123"/>
         <systemColor name="labelColor">
