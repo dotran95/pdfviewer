@@ -62,7 +62,6 @@ class PDFEditView {
         sidebarView.snp.makeConstraints { make in
             make.top.equalTo(parent.pdfView).inset(12)
             make.right.equalTo(parent.pdfView).inset(12)
-            make.width.equalTo(60)
         }
         sidebarView.delegate = self
 
@@ -143,7 +142,7 @@ class PDFEditView {
             break
         }
 
-        let translation = gesture.translation(in: gesture.view)
+        let translation = gesture.translation(in: gesture.view) / pdfView.scaleFactor
         switch panTransition {
         case .move:
             annotation.move(translation)
@@ -171,6 +170,15 @@ extension PDFEditView: PDFDocumentSideBarDelegate {
         let vc = PDFSignatureVc()
         vc.delegate = self
         parent?.present(UINavigationController(rootViewController: vc), animated: true)
+    }
+
+    func onDelete(_ sender: UIButton) {
+        guard let annotation = selectedAnnotation else {
+            return
+        }
+
+        removeSelectionAnnotation()
+        pdfView?.currentPage?.removeAnnotation(annotation)
     }
 }
 

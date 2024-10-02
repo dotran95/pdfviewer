@@ -17,6 +17,7 @@ enum PDFDocumentSideBarbuttons: Int {
 protocol PDFDocumentSideBarDelegate: AnyObject {
     func onAddText(_ sender: UIButton)
     func onAddSignature(_ sender: UIButton)
+    func onDelete(_ sender: UIButton)
 }
 
 class PDFDocumentSideBar: UIView {
@@ -60,8 +61,9 @@ class PDFDocumentSideBar: UIView {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.snp.makeConstraints { make in
             make.centerX.equalTo(self)
-            make.verticalEdges.equalTo(self).inset(8)
+            make.top.equalTo(self).inset(8)
             make.width.equalTo(buttonSize)
+            make.horizontalEdges.equalTo(self).inset(4)
             make.height.equalTo(buttonSize * CGFloat(buttons.count) + spacing * CGFloat(buttons.count - 1))
         }
 
@@ -80,6 +82,27 @@ class PDFDocumentSideBar: UIView {
                 break
             }
         }
+
+        let line = UIView()
+        line.backgroundColor = .lightGray
+        addSubview(line)
+        line.snp.makeConstraints { make in
+            make.top.equalTo(stackView.snp.bottom).offset(4)
+            make.height.equalTo(1)
+            make.horizontalEdges.equalToSuperview()
+        }
+
+        let deleteBtn = createDeleteButton()
+        addSubview(deleteBtn)
+
+        deleteBtn.snp.makeConstraints { make in
+            make.top.equalTo(line.snp.bottom).offset(4)
+            make.height.equalTo(buttonSize)
+            make.width.equalTo(buttonSize)
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(self).inset(4)
+        }
+
     }
 
     private func createTextButton() -> UIButton {
@@ -101,6 +124,19 @@ class PDFDocumentSideBar: UIView {
         return btn
     }
 
+    private func createDeleteButton() -> UIButton {
+        let btn = UIButton(type: .system)
+        btn.setImage(UIImage(systemName: "delete.left"), for: .normal)
+        btn.tintColor = .black
+        btn.addTarget(self, action: #selector(deleteButtonTapped(_:)), for: .touchUpInside)
+        btn.tag = PDFDocumentSideBarbuttons.signature.rawValue
+        return btn
+    }
+
+    @objc private func deleteButtonTapped(_ sender: UIButton) {
+        delegate?.onDelete(sender)
+    }
+
     @objc private func buttonTapped(_ sender: UIButton) {
         guard let type = PDFDocumentSideBarbuttons(rawValue: sender.tag) else { return }
         switch type {
@@ -112,5 +148,4 @@ class PDFDocumentSideBar: UIView {
             break
         }
     }
-
 }

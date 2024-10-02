@@ -56,5 +56,4 @@ class PDFSignatureVc: UIViewController {
         delegate?.signature(signatureView.getCroppedSignature())
         dismiss(animated: true)
     }
-
 }
