@@ -102,7 +102,7 @@ class PDFEditView {
                     setSelectiondAnnotation(customAnnotation)
                     return
                 }
-                if let textAnnotation = customAnnotation as? TextAnnotation {
+                if let textAnnotation = customAnnotation as? PDFTextAnnotation {
                     showEditTextView(annotation: textAnnotation)
                     return
                 }
@@ -163,7 +163,8 @@ class PDFEditView {
 // MARK: - PDFDocumentSideBarDelegate
 extension PDFEditView: PDFDocumentSideBarDelegate {
     func onAddText(_ sender: UIButton) {
-        addTextAnnotation()
+//        addTextAnnotation()
+        addNewTextAnnotation()
     }
     
     func onAddSignature(_ sender: UIButton) {
@@ -234,38 +235,30 @@ extension PDFEditView {
             make.bottom.equalTo(parent.view)
         }
         drawVc.didMove(toParent: parent)
-        drawVc.type = selectedAnnotation is TextAnnotation ? .text:.none
+        drawVc.type = selectedAnnotation is PDFTextAnnotation ? .text:.none
         drawConfigureView = drawVc
     }
 }
 
 // MARK: - TextAnnotation
 extension PDFEditView {
-    private func addTextAnnotation() {
-        guard let pdfView = pdfView, let page = pdfView.currentPage else { return }
-        
-        let centerPoint = page.bounds(for: .cropBox).center
-        
-        // Defaut fontsize of page is 20 when scaleFactor equa 1
-        let font = TextAnnotation.kFont
-        let maxWidth = pdfView.bounds.width
-        
-        // Determine the centered position
-        let textSize: CGSize = TextAnnotation.calculateContentSize(for: "Text", with: font, maxWidth: maxWidth)
 
-        let origin = centerPoint - (textSize / 2).toPoint()
+    private func addNewTextAnnotation() {
+        guard let pdfView = pdfView, let page = pdfView.currentPage else { return }
 
         // Create the text annotation
-        let annotation = TextAnnotation(bounds: .init(origin: origin, size: textSize))
-        annotation.font = font
+        let annotation = PDFTextAnnotation(bounds: .zero)
+        annotation.font = UIFont.systemFont(ofSize: 50)
         annotation.contents = "Text"
-        annotation.widgetStringValue = "Text"
-        annotation.fontColor = TextAnnotation.kColor
-        page.addAnnotation(annotation)
+        annotation.fontColor = UIColor.black
+        annotation.alignment = .center
+        annotation.calculateBounds(page.centerPoint)
 
+        page.addAnnotation(annotation)
     }
 
-    func showEditTextView(annotation: TextAnnotation) {
+
+    func showEditTextView(annotation: PDFTextAnnotation) {
         guard let parent = parent, let pdfView = pdfView, let page = pdfView.currentPage else { return }
 
         // Get the current annotation's position
@@ -285,17 +278,9 @@ extension PDFEditView {
         }
 
         editTextView.onCompleted = { txtView in
-            guard let text = txtView.text, let font = txtView.font else { return }
+            guard let text = txtView.text else { return }
             annotation.contents = text
-            annotation.widgetStringValue = text
-            annotation.fontColor = txtView.textColor
-            annotation.font = font
-            
-            let maxWidth = pdfView.bounds.width
-
-            let newSize = TextAnnotation.calculateContentSize(for: text, with: font, maxWidth: maxWidth)
-            let newCenter = centerPoint - newSize.toPoint() / 2
-            annotation.bounds = .init(origin: newCenter, size: newSize)
+            annotation.calculateBounds(centerPoint, width: currentBounds.width)
             page.addAnnotation(annotation)
         }
 
@@ -304,15 +289,16 @@ extension PDFEditView {
 
 extension PDFEditView: PDFDrawConfigurationViewDelegate {
     func didSelectFont(_ font: UIFont) {
-        if let textAnnotation = selectedAnnotation as? TextAnnotation {
+        if let textAnnotation = selectedAnnotation as? PDFTextAnnotation {
             textAnnotation.font = font
-            textAnnotation.resize()
+            let centerPoint = CGPoint(x: textAnnotation.bounds.midX, y: textAnnotation.bounds.midY)
+            textAnnotation.calculateBounds(centerPoint, width: textAnnotation.bounds.width)
             return
         }
     }
 
     func didSelectColor(_ color: UIColor) {
-        if let textAnnotation = selectedAnnotation as? TextAnnotation {
+        if let textAnnotation = selectedAnnotation as? PDFTextAnnotation {
             textAnnotation.fontColor = color
             return
         }
@@ -323,7 +309,7 @@ extension PDFEditView: PDFDrawConfigurationViewDelegate {
     }
 
     func currentColor() -> UIColor {
-        if let textAnnotation = selectedAnnotation as? TextAnnotation {
+        if let textAnnotation = selectedAnnotation as? PDFTextAnnotation {
             return textAnnotation.fontColor ?? .black
         }
         return .black
@@ -334,10 +320,8 @@ extension PDFEditView: PDFSignatureDelegate {
     func signature(_ signature: UIImage?) {
         guard let image = signature, let pdfView = pdfView, let page = pdfView.currentPage else { return }
 
-        let centerPoint = page.bounds(for: .cropBox).center
-
         let size = CGSize(width: 150, height: 150)
-        let origin = centerPoint - (size / 2).toPoint()
+        let origin = page.centerPoint - (size / 2).toPoint()
 
         let annotaion = PDFImageAnnotation(image: image, properties: nil, rect: CGRect(origin: origin, size: size))
         page.addAnnotation(annotaion)

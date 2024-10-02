@@ -115,6 +115,7 @@ class PDFEditTextView: UIViewController, UITextViewDelegate {
 
             UIView.animate(withDuration: animationDuration) { [self] in
                 textView.center = .init(x: container.center.x, y: container.center.y - keyboardHeight)
+                textView.font = textView.font?.copyWith(fontSize: 50)
                 view.backgroundColor = .black.withAlphaComponent(0.5)
             }
         }

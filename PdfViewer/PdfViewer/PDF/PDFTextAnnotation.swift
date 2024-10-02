@@ -14,6 +14,17 @@ class Annotation: PDFAnnotation {
     var circleRadius: CGFloat = 3
     var selected: Bool = false
 
+    var contentInset: UIEdgeInsets = .init(top: 5, left: 12, bottom: 5, right: 12)
+    
+    var horizontalPadding : CGFloat {
+        return contentInset.left + contentInset.right
+    }
+    var verizontalPadding : CGFloat {
+        return contentInset.top + contentInset.bottom
+    }
+
+    var scaleFactor: CGFloat = 1
+
     override func draw(with box: PDFDisplayBox, in context: CGContext) {
         super.draw(with: box, in: context)
 
@@ -47,91 +58,111 @@ class Annotation: PDFAnnotation {
 
     func resizeLeading(_ translation: CGPoint) {
         let newWidth = bounds.width - translation.x
-        let newHeight = calculateHeight(newWidth) ?? bounds.height
-        bounds = CGRect(x: bounds.origin.x + translation.x,
-                        y: bounds.origin.y,
-                        width: newWidth,
-                        height: newHeight)
+        let centerPoint = CGPoint(x: bounds.midX + translation.x * 0.5, y: bounds.midY)
+        calculateBounds(centerPoint, width: newWidth)
     }
 
     func resizeTrailing(_ translation: CGPoint) {
         let newWidth = bounds.width + translation.x
-        let newHeight = calculateHeight(newWidth) ?? bounds.height
-        bounds = CGRect(x: bounds.origin.x,
-                        y: bounds.origin.y,
-                        width: newWidth,
-                        height: newHeight)
+        let centerPoint = CGPoint(x: bounds.midX + translation.x * 0.5, y: bounds.midY)
+        calculateBounds(centerPoint, width: newWidth)
     }
-
-    func resize() {
-        let newWidth = bounds.width
-        let center = CGPoint(x: bounds.midX, y: bounds.midY)
-        let newHeight = calculateHeight(newWidth) ?? bounds.height
-
-        bounds = CGRect(x: center.x - newWidth / 2,
-                        y: center.y - newHeight / 2,
-                        width: newWidth,
-                        height: newHeight)
-    }
-
+    
     func move(_ translation: CGPoint) {
         bounds = bounds.offsetBy(dx: translation.x, dy: -translation.y)
     }
 
-    func calculateHeight(_ maxWidth: CGFloat) -> CGFloat? {
-        return bounds.height
-    }
+    func calculateBounds(_ centerPoint: CGPoint, width: CGFloat = .zero) {}
 }
 
-class TextAnnotation: Annotation {
-
-    static let kFont = UIFont.systemFont(ofSize: 50)
-    static let kColor = UIColor.black
-    static let kBackground = UIColor.clear
-
-    init(bounds: CGRect) {
-        super.init(bounds: bounds, forType: .freeText, withProperties: nil)
-        config()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        config()
-    }
-
-    private func config() {
-        alignment = .center
-        backgroundColor = UIColor.clear
-        color = UIColor.clear
-        fontColor = UIColor.black
-        interiorColor = .clear
-    }
-
-    override func calculateHeight(_ maxWidth: CGFloat) -> CGFloat? {
-        guard let text = contents, let font = font else {
+class PDFTextAnnotation: Annotation {
+    
+    var attributedString: NSAttributedString? {
+        guard let text = contents, let font = font, let fontColor = fontColor else {
             return nil
         }
-        let size = TextAnnotation.calculateContentSize(for: text,
-                                                       with: font,
-                                                       maxWidth: maxWidth)
-        return size.height
+        let paragraphStyle: NSMutableParagraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = alignment
+        
+        let attributes = [
+            NSAttributedString.Key.font: font,
+            NSAttributedString.Key.foregroundColor: fontColor,
+            NSAttributedString.Key.paragraphStyle: paragraphStyle
+        ]
+        
+        return NSMutableAttributedString(string: text, attributes: attributes)
     }
-
-    static func calculateContentSize(for text: String,
-                                     with font: UIFont,
-                                     maxWidth: CGFloat) -> CGSize {
-        let textView = UITextView()
-        textView.text = text
-        textView.font = font
-        textView.frame = CGRect(x: 0, y: 0, width: maxWidth, height: 1000)
-        textView.isScrollEnabled = false
-        textView.autocorrectionType = .no
-        textView.spellCheckingType = .no
-        textView.textContainerInset = .zero
-        // Force the textView to layout its content to get the correct contentSize
-        textView.sizeToFit()
-
-        return textView.contentSize
+    
+    init(bounds: CGRect) {
+        super.init(bounds: bounds, forType: .widget, withProperties: nil)
+        color = .clear
     }
+    
+    override func draw(with box: PDFDisplayBox, in context: CGContext) {
+        super.draw(with: box, in: context)
+        guard let attributedString = attributedString else { return }
+        
+        let necessarySize = attributedString.size()
+        
+        let widthForText = bounds.width - horizontalPadding
+        let sizeForText: CGSize = getTextSize(width: max(widthForText, .zero))
 
+        let maxWidth = sizeForText.width
+        
+        let textBounds: CGRect
+        
+        if necessarySize.width < maxWidth {
+            let x = bounds.minX + (bounds.width - necessarySize.width) / 2
+            let y = bounds.minY + (bounds.height - necessarySize.height) / 2
+            textBounds = CGRect(origin: CGPoint(x: x, y: y), size: necessarySize)
+        } else {
+            let origin = CGPoint(x: bounds.minX +  contentInset.left,
+                                 y: bounds.minY + contentInset.top)
+            textBounds = CGRect(origin: origin, size: sizeForText)
+        }
+        
+        context.saveGState()
+        
+        if let pagebounds = page?.bounds(for: .cropBox) {
+            context.translateBy(x: 0, y: pagebounds.height)
+            context.scaleBy(x: 1.0, y: -1.0)
+            UIGraphicsPushContext(context)
+            attributedString.draw(in: CGRect(x: textBounds.origin.x,
+                                             y: pagebounds.maxY - textBounds.origin.y - textBounds.height,
+                                             width: textBounds.width,
+                                             height: textBounds.height))
+            UIGraphicsPopContext()
+        }
+        context.restoreGState()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    override func calculateBounds(_ centerPoint: CGPoint, width: CGFloat = .zero) {
+        let widthForText = width - horizontalPadding
+        let sizeForText: CGSize = getTextSize(width: max(widthForText, .zero))
+        
+        print(sizeForText, centerPoint)
+        
+        let sizeForAnnotaion = CGSize(width: sizeForText.width + horizontalPadding,
+                                      height: sizeForText.height + verizontalPadding)
+        
+        let newOrigin: CGPoint = CGPoint(x: centerPoint.x - sizeForAnnotaion.width / 2,
+                                         y: centerPoint.y - sizeForAnnotaion.height / 2)
+        
+        bounds = CGRect(origin: newOrigin, size: sizeForAnnotaion)
+    }
+    
+    private func getTextSize(width: CGFloat = .zero) -> CGSize {
+        guard let attributedString = attributedString else { return .zero }
+        if width > 0 {
+            let heightForText = attributedString.height(withConstrainedWidth: width)
+            return CGSize(width: width, height: heightForText)
+        } else {
+            return attributedString.size()
+        }
+
+    }
 }

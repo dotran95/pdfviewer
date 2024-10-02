@@ -31,10 +31,6 @@ extension CGRect {
     }
 
     static func / (value: CGFloat, point: CGRect) -> CGRect { point / value }
-    
-    var center: CGPoint {
-        return CGPoint(x: width / 2, y: height / 2)
-    }
 }
 
 extension CGPoint {
@@ -121,6 +117,16 @@ extension String{
         return sizeWithConstrainedWidth(maxWidth, font: font)
     }
 
+}
+
+extension NSAttributedString {
+
+    func height(withConstrainedWidth width: CGFloat) -> CGFloat {
+        let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
+        let boundingBox = boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil)
+        let result = ceil(boundingBox.height)
+        return result
+    }
 }
 
 extension PDFView {

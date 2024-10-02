@@ -31,4 +31,9 @@ extension PDFPage {
         let annotationBounds = CGRect(x: bounds.width - 50, y: bounds.height - 50, width: 30, height: 50)
         addAnnotation(PDFBookmarkAnnotation(bounds: annotationBounds))
     }
+
+    var centerPoint: CGPoint {
+        let bounds = bounds(for: .cropBox)
+        return CGPoint(x: bounds.midX, y: bounds.midY)
+    }
 }

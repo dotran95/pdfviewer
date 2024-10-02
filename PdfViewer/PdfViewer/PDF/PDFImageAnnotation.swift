@@ -15,6 +15,7 @@ class PDFImageAnnotation: Annotation {
     init(image: UIImage?, properties: [AnyHashable: Any]?, rect: CGRect) {
         super.init(bounds: rect, forType: .widget, withProperties: properties)
         self.image = image
+        contentInset = .init(top: 30, left: 30, bottom: 30, right: 30)
     }
 
     required init?(coder: NSCoder) {
@@ -24,7 +25,10 @@ class PDFImageAnnotation: Annotation {
     override func draw(with box: PDFDisplayBox, in context: CGContext) {
         super.draw(with: box, in: context)
         guard let cgImage = image?.cgImage else { return }
-        context.draw(cgImage, in: bounds)
+        context.draw(cgImage, in: CGRect(x: bounds.origin.x + contentInset.left,
+                                         y: bounds.origin.y + contentInset.top, 
+                                         width: bounds.width - horizontalPadding,
+                                         height: bounds.height - verizontalPadding))
     }
 
     override func resizeLeading(_ translation: CGPoint) {
@@ -42,15 +46,4 @@ class PDFImageAnnotation: Annotation {
                         width: newWidth,
                         height: newWidth)
     }
-
-    override func resize() {
-        let center = CGPoint(x: bounds.midX, y: bounds.midY)
-        let newHeight = calculateHeight(bounds.width) ?? bounds.height
-
-        bounds = CGRect(x: center.x - newHeight / 2,
-                        y: center.y - newHeight / 2,
-                        width: newHeight,
-                        height: newHeight)
-    }
-
 }
