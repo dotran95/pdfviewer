@@ -83,7 +83,7 @@ class PDFViewer: UIViewController, PDFDocumentDelegate {
         pdfView.displayDirection = .horizontal
         pdfView.displayMode = .singlePage
 
-        documentEdit = PDFEditView(items: [.text], parent: self)
+        documentEdit = PDFEditView(items: [.text, .signature], parent: self)
 
         guard let document = pdfView.document else {
             return

@@ -8,13 +8,15 @@
 import UIKit
 
 enum PDFDocumentSideBarbuttons: Int {
-    case text = 1
-    case oval = 2
-    case circle = 3
+    case text = 0
+    case oval
+    case circle
+    case signature
 }
 
 protocol PDFDocumentSideBarDelegate: AnyObject {
-    func onClick(_ type: PDFDocumentSideBarbuttons)
+    func onAddText(_ sender: UIButton)
+    func onAddSignature(_ sender: UIButton)
 }
 
 class PDFDocumentSideBar: UIView {
@@ -72,6 +74,8 @@ class PDFDocumentSideBar: UIView {
             switch button {
             case .text:
                 stackView.addArrangedSubview(createTextButton())
+            case .signature:
+                stackView.addArrangedSubview(createSignatureButton())
             default:
                 break
             }
@@ -88,9 +92,25 @@ class PDFDocumentSideBar: UIView {
         return btn
     }
 
+    private func createSignatureButton() -> UIButton {
+        let btn = UIButton(type: .system)
+        btn.setImage(UIImage(systemName: "signature"), for: .normal)
+        btn.tintColor = .black
+        btn.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+        btn.tag = PDFDocumentSideBarbuttons.signature.rawValue
+        return btn
+    }
+
     @objc private func buttonTapped(_ sender: UIButton) {
         guard let type = PDFDocumentSideBarbuttons(rawValue: sender.tag) else { return }
-        delegate?.onClick(type)
+        switch type {
+        case .text:
+            delegate?.onAddText(sender)
+        case .signature:
+            delegate?.onAddSignature(sender)
+        default:
+            break
+        }
     }
 
 }

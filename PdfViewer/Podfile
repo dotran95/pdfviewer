@@ -1,0 +1,21 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, '15.0'
+
+target 'PdfViewer' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for PdfViewer
+	pod "SwiftSignatureView"
+	pod "SnapKit"
+
+  target 'PdfViewerTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'PdfViewerUITests' do
+    # Pods for testing
+  end
+
+end

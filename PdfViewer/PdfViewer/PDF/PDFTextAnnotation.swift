@@ -9,19 +9,13 @@ import PDFKit
 
 class Annotation: PDFAnnotation {
 
-    private var borderColor: UIColor = .blue
-    private var borderWidth: CGFloat = 1.0
-    private var circleRadius: CGFloat = 3
+    var borderColor: UIColor = .blue
+    var borderWidth: CGFloat = 1.0
+    var circleRadius: CGFloat = 3
     var selected: Bool = false
 
     override func draw(with box: PDFDisplayBox, in context: CGContext) {
         super.draw(with: box, in: context)
-
-        print("=====")
-        for (k, v) in annotationKeyValues {
-            print("Key: \(k) \(v)")
-        }
-        print("=====e")
 
         if selected {
             context.setStrokeColor(borderColor.cgColor)
@@ -35,7 +29,7 @@ class Annotation: PDFAnnotation {
         }
     }
 
-    private func drawCircle(at point: CGPoint, in context: CGContext) {
+    func drawCircle(at point: CGPoint, in context: CGContext) {
         context.setFillColor(borderColor.cgColor) // Circle color
         context.addEllipse(in: CGRect(x: point.x , y: point.y , width: circleRadius * 2, height: circleRadius * 2))
         context.fillPath()
@@ -90,7 +84,7 @@ class Annotation: PDFAnnotation {
 }
 
 class TextAnnotation: Annotation {
-    
+
     static let kFont = UIFont.systemFont(ofSize: 50)
     static let kColor = UIColor.black
     static let kBackground = UIColor.clear
@@ -118,8 +112,8 @@ class TextAnnotation: Annotation {
             return nil
         }
         let size = TextAnnotation.calculateContentSize(for: text,
-                                                      with: font,
-                                                      maxWidth: maxWidth)
+                                                       with: font,
+                                                       maxWidth: maxWidth)
         return size.height
     }
 

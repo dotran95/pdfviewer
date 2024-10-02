@@ -7,13 +7,13 @@
 
 import UIKit
 
-class TextSettingPopoverView: UIViewController {
+class PDFTextSettingPopoverView: UIViewController {
 
     private let kItemHeight: CGFloat = 50.0
     private let kPadding: CGFloat = 8.0
 
-    var currentFontSize: Float = 40
-    var onSelectedFontSize: ((CGFloat) -> Void)?
+    var currentFont: UIFont = .systemFont(ofSize: 20)
+    var onSelectedFont: ((UIFont) -> Void)?
 
     private let fontSizeSlider: UISlider = {
         let slider = UISlider()
@@ -40,7 +40,7 @@ class TextSettingPopoverView: UIViewController {
 
         // Add target for slider value change
         fontSizeSlider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
-        fontSizeSlider.value = currentFontSize
+        fontSizeSlider.value = Float(currentFont.pointSize)
     }
 
     private func fontSizeView() {
@@ -76,9 +76,44 @@ class TextSettingPopoverView: UIViewController {
         }
     }
 
+    private func setupTextAligmentView() {
+        let titleLabel = UILabel()
+        titleLabel.font = .systemFont(ofSize: 14)
+        titleLabel.text = "A"
+        titleLabel.textColor = .black
+        titleLabel.textAlignment = .center
+
+        titleLabel.snp.makeConstraints { make in
+            make.width.equalTo(20)
+        }
+
+        let unitLabel = UILabel()
+        unitLabel.font = .systemFont(ofSize: 17, weight: .bold)
+        unitLabel.text = "A"
+        unitLabel.textColor = .black
+        unitLabel.textAlignment = .center
+        unitLabel.snp.makeConstraints { make in
+            make.width.equalTo(30)
+        }
+
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, fontSizeSlider, unitLabel])
+        stackView.axis = .horizontal
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+
+        view.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.height.equalTo(kItemHeight)
+            make.bottom.equalTo(self.view).inset(kPadding)
+            make.horizontalEdges.equalTo(self.view).inset(kPadding)
+        }
+    }
+
+
     @objc
     private func sliderValueChanged(_ sender: UISlider) {
         let fontSize = CGFloat(sender.value)
-        onSelectedFontSize?(fontSize)
+        guard let newFont = currentFont.copyWith(fontSize: fontSize) else { return }
+        onSelectedFont?(newFont)
     }
 }

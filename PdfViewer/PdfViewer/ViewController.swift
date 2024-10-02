@@ -15,7 +15,7 @@ class ViewController: UIViewController {
         let vc = PDFViewer()
         vc.modalPresentationStyle = .fullScreen
         
-        guard let url = Bundle.main.url(forResource: "Sample1", withExtension: "pdf"),
+        guard let url = Bundle.main.url(forResource: "Sample", withExtension: "pdf"),
                 let document = PDFDocument(url: url) else {
             return
         }

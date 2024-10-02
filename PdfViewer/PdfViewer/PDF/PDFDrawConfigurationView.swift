@@ -7,15 +7,15 @@
 
 import UIKit
 
-protocol DrawConfigurationViewDelegate: AnyObject {
+protocol PDFDrawConfigurationViewDelegate: AnyObject {
     func didSelectColor(_ color: UIColor)
-    func didSelectFontSize(_ fontSize: CGFloat)
+    func didSelectFont(_ font: UIFont)
     func currentFont() -> UIFont
     func currentColor() -> UIColor
 
 }
 
-enum DrawConfigurationButton: Int {
+enum PDFDrawConfigurationButton: Int {
     case settingOptions = 0
     case blackColor
     case blueColor
@@ -45,18 +45,18 @@ enum DrawConfigurationButton: Int {
     }
 }
 
-enum DrawAnnotationType {
+enum PDFDrawAnnotationType {
     case text
     case none
 }
 
-class DrawConfigurationView: UIViewController {
+class PDFDrawConfigurationView: UIViewController {
 
     // MARK: - Constants and Computed
 
     private let buttonWidth: CGFloat = 30
 
-    private let buttons: [DrawConfigurationButton] = [
+    private let buttons: [PDFDrawConfigurationButton] = [
         .settingOptions,
         .blackColor,
         .blueColor,
@@ -71,9 +71,9 @@ class DrawConfigurationView: UIViewController {
     // MARK: - UIElements
     private var container: UIStackView!
 
-    weak var delegate: DrawConfigurationViewDelegate?
+    weak var delegate: PDFDrawConfigurationViewDelegate?
 
-    var type: DrawAnnotationType = .none
+    var type: PDFDrawAnnotationType = .none
 
     // MARK: - Initialize
     override func viewDidLoad() {
@@ -98,8 +98,8 @@ class DrawConfigurationView: UIViewController {
 
     }
 
-    private func createButton(_ type: DrawConfigurationButton) -> UIButton {
-        let button = UIButton(type: .system)
+    private func createButton(_ type: PDFDrawConfigurationButton) -> UIButton {
+        let button = type == .pickerColor ? RainBowButton(type: .system) : UIButton(type: .system)
         button.layer.cornerRadius = buttonWidth / 2
         button.layer.masksToBounds = true
 
@@ -116,32 +116,6 @@ class DrawConfigurationView: UIViewController {
             button.titleLabel?.font = .systemFont(ofSize: 17)
             break
         case .pickerColor:
-            button.backgroundColor = nil
-            // Tạo gradient layer cho border
-            let gradientLayer = CAGradientLayer()
-            gradientLayer.frame = button.bounds
-            gradientLayer.colors = [
-                UIColor.red.cgColor,
-                UIColor.orange.cgColor,
-                UIColor.yellow.cgColor,
-                UIColor.green.cgColor,
-                UIColor.blue.cgColor,
-                UIColor.purple.cgColor
-            ]
-            gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.5) // Gradient bắt đầu từ trái sang phải
-            gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.5)
-
-            // Tạo shape layer với đường viền cho UIButton
-            let shapeLayer = CAShapeLayer()
-            shapeLayer.lineWidth = 5
-            shapeLayer.path = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: buttonWidth, height: buttonWidth), cornerRadius: buttonWidth / 2).cgPath
-            shapeLayer.fillColor = UIColor.clear.cgColor // Làm trong suốt nền
-            shapeLayer.strokeColor = UIColor.black.cgColor // Placeholder cho viền (thực ra sẽ là gradient)
-            gradientLayer.mask = shapeLayer // Sử dụng gradient làm viền
-
-            // Thêm gradient vào nút
-            button.layer.addSublayer(gradientLayer)
-            print(button.layer.sublayers)
             break
         default:
             break
@@ -154,7 +128,7 @@ class DrawConfigurationView: UIViewController {
 
     @objc
     private func clickToDrawButton(_ sender: UIButton) {
-        guard let type = DrawConfigurationButton(rawValue: sender.tag) else { return }
+        guard let type = PDFDrawConfigurationButton(rawValue: sender.tag) else { return }
         switch type {
         case .annotations:
             break
@@ -173,9 +147,9 @@ class DrawConfigurationView: UIViewController {
 
 // MARK: - Actions
 
-extension DrawConfigurationView: UIPopoverPresentationControllerDelegate, UIColorPickerViewControllerDelegate {
+extension PDFDrawConfigurationView: UIPopoverPresentationControllerDelegate, UIColorPickerViewControllerDelegate {
     private func showTextSettingPopover(_ sender: UIButton) {
-        let popoverContent = TextSettingPopoverView() // Set size of popover
+        let popoverContent = PDFTextSettingPopoverView() // Set size of popover
         popoverContent.modalPresentationStyle = .popover
 
         // Configure popover presentation controller
@@ -186,10 +160,10 @@ extension DrawConfigurationView: UIPopoverPresentationControllerDelegate, UIColo
             popover.delegate = self
         }
 
-        popoverContent.onSelectedFontSize = { [weak self] fontSize in
-            self?.delegate?.didSelectFontSize(fontSize)
+        popoverContent.onSelectedFont = { [weak self] font in
+            self?.delegate?.didSelectFont(font)
         }
-        popoverContent.currentFontSize = Float(delegate?.currentFont().pointSize ?? 20)
+        popoverContent.currentFont = delegate?.currentFont() ?? .systemFont(ofSize: 20)
 
         // Present the popover
         present(popoverContent, animated: true)
@@ -219,10 +193,26 @@ extension DrawConfigurationView: UIPopoverPresentationControllerDelegate, UIColo
 
     func colorPickerViewController(_ viewController: UIColorPickerViewController, didSelect color: UIColor, continuously: Bool) {
         delegate?.didSelectColor(color)
-        container.arrangedSubviews.first(where: { $0.tag == DrawConfigurationButton.pickerColor.rawValue })?.backgroundColor = color
+        container.arrangedSubviews.first(where: { $0.tag == PDFDrawConfigurationButton.pickerColor.rawValue })?.backgroundColor = color
 
         if !continuously {
             viewController.dismiss(animated: true)
         }
+    }
+}
+
+class RainBowButton: UIButton {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        addRainbowBackground()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        addRainbowBackground()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

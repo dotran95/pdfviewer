@@ -166,3 +166,24 @@ extension UIFont {
         return copyWith(fontSize: pointSize * scale)
     }
 }
+
+extension UIView {
+    func addRainbowBackground() {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = self.bounds
+
+        gradientLayer.colors = [
+            UIColor.red.cgColor,
+            UIColor.orange.cgColor,
+            UIColor.yellow.cgColor,
+            UIColor.green.cgColor,
+            UIColor.blue.cgColor,
+            UIColor.purple.cgColor
+        ]
+
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
+
+        self.layer.insertSublayer(gradientLayer, at: 0)
+    }
+}

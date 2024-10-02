@@ -43,7 +43,7 @@ class PDFEditView {
         return panGesture
     }()
 
-    private var drawConfigureView : DrawConfigurationView?
+    private var drawConfigureView : PDFDrawConfigurationView?
 
 
     var selectedAnnotation: Annotation?
@@ -62,7 +62,7 @@ class PDFEditView {
         sidebarView.snp.makeConstraints { make in
             make.top.equalTo(parent.pdfView).inset(12)
             make.right.equalTo(parent.pdfView).inset(12)
-            make.width.equalTo(40)
+            make.width.equalTo(60)
         }
         sidebarView.delegate = self
 
@@ -163,17 +163,15 @@ class PDFEditView {
 
 // MARK: - PDFDocumentSideBarDelegate
 extension PDFEditView: PDFDocumentSideBarDelegate {
-
-    func onClick(_ type: PDFDocumentSideBarbuttons) {
-        switch type {
-        case .text:
-            addTextAnnotation()
-            break
-        default:
-            break
-        }
+    func onAddText(_ sender: UIButton) {
+        addTextAnnotation()
     }
-
+    
+    func onAddSignature(_ sender: UIButton) {
+        let vc = PDFSignatureVc()
+        vc.delegate = self
+        parent?.present(UINavigationController(rootViewController: vc), animated: true)
+    }
 }
 
 // MARK: - Private funcs
@@ -192,6 +190,9 @@ extension PDFEditView {
         pdfView.minScaleFactor = pdfView.scaleFactor
         pdfView.maxScaleFactor = pdfView.scaleFactor
 
+        if annotation is PDFImageAnnotation {
+            return
+        }
         showDrawConfigView()
     }
 
@@ -204,16 +205,18 @@ extension PDFEditView {
         pdfView.maxScaleFactor = config.maxScaleFactor
         pdfView.disableScroll(false)
 
-        drawConfigureView?.willMove(toParent: nil)
-        drawConfigureView?.view.removeFromSuperview()
-        drawConfigureView?.removeFromParent()
-        drawConfigureView = nil
+        if drawConfigureView != nil {
+            drawConfigureView?.willMove(toParent: nil)
+            drawConfigureView?.view.removeFromSuperview()
+            drawConfigureView?.removeFromParent()
+            drawConfigureView = nil
+        }
     }
 
     private func showDrawConfigView() {
         guard let parent = parent else { return }
 
-        let drawVc = DrawConfigurationView()
+        let drawVc = PDFDrawConfigurationView()
         drawVc.delegate = self
         parent.addChild(drawVc)
         parent.view.addSubview(drawVc.view)
@@ -291,19 +294,18 @@ extension PDFEditView {
     }
 }
 
-extension PDFEditView: DrawConfigurationViewDelegate {
-
-    func didSelectColor(_ color: UIColor) {
+extension PDFEditView: PDFDrawConfigurationViewDelegate {
+    func didSelectFont(_ font: UIFont) {
         if let textAnnotation = selectedAnnotation as? TextAnnotation {
-            textAnnotation.fontColor = color
+            textAnnotation.font = font
+            textAnnotation.resize()
             return
         }
     }
 
-    func didSelectFontSize(_ fontSize: CGFloat) {
+    func didSelectColor(_ color: UIColor) {
         if let textAnnotation = selectedAnnotation as? TextAnnotation {
-            textAnnotation.font = textAnnotation.font?.copyWith(fontSize: fontSize)
-            textAnnotation.resize()
+            textAnnotation.fontColor = color
             return
         }
     }
@@ -314,8 +316,22 @@ extension PDFEditView: DrawConfigurationViewDelegate {
 
     func currentColor() -> UIColor {
         if let textAnnotation = selectedAnnotation as? TextAnnotation {
-            return selectedAnnotation?.fontColor ?? .black
+            return textAnnotation.fontColor ?? .black
         }
         return .black
+    }
+}
+
+extension PDFEditView: PDFSignatureDelegate {
+    func signature(_ signature: UIImage?) {
+        guard let image = signature, let pdfView = pdfView, let page = pdfView.currentPage else { return }
+
+        let centerPoint = page.bounds(for: .cropBox).center
+
+        let size = CGSize(width: 150, height: 150)
+        let origin = centerPoint - (size / 2).toPoint()
+
+        let annotaion = PDFImageAnnotation(image: image, properties: nil, rect: CGRect(origin: origin, size: size))
+        page.addAnnotation(annotaion)
     }
 }

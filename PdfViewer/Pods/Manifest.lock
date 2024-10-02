@@ -1,0 +1,20 @@
+PODS:
+  - SnapKit (5.7.1)
+  - SwiftSignatureView (3.2.1)
+
+DEPENDENCIES:
+  - SnapKit
+  - SwiftSignatureView
+
+SPEC REPOS:
+  trunk:
+    - SnapKit
+    - SwiftSignatureView
+
+SPEC CHECKSUMS:
+  SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
+  SwiftSignatureView: b09443ea8359a5bc267202226f4606fc03193173
+
+PODFILE CHECKSUM: 5638144c0f5d93bfc8114d8311160843a28aea83
+
+COCOAPODS: 1.15.2
