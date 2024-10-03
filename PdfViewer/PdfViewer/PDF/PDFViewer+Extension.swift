@@ -160,7 +160,13 @@ extension PDFView {
         return newBounds
     }
 
-
+    var currentCenterPointInPage: CGPoint {
+        let centerPoint = CGPoint(x: bounds.midX, y: bounds.midY)
+        if let page = currentPage {
+            return convert(centerPoint, to: page)
+        }
+        return .zero
+    }
 }
 
 extension UIFont {
@@ -191,5 +197,11 @@ extension UIView {
         gradientLayer.endPoint = CGPoint(x: 1, y: 1)
 
         self.layer.insertSublayer(gradientLayer, at: 0)
+    }
+}
+
+extension UIDevice {
+    static func isIpad() -> Bool {
+        return current.userInterfaceIdiom == .pad
     }
 }

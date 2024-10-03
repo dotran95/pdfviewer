@@ -120,6 +120,9 @@ extension PDFViewer: PDFViewControlDelegate {
 
     func showSearch() {
         mode = .view
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            searchVc.modalPresentationStyle = .formSheet
+        }
         present(searchVc, animated: true)
     }
 

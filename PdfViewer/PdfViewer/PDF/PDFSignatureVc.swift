@@ -14,7 +14,7 @@ protocol PDFSignatureDelegate: AnyObject {
 }
 
 class PDFSignatureVc: UIViewController {
-    private var signatureView = LegacySwiftSignatureView()
+    private var signatureView = SwiftSignatureView()
 
     weak var delegate: PDFSignatureDelegate?
 

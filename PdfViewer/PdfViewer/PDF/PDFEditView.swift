@@ -163,13 +163,13 @@ class PDFEditView {
 // MARK: - PDFDocumentSideBarDelegate
 extension PDFEditView: PDFDocumentSideBarDelegate {
     func onAddText(_ sender: UIButton) {
-//        addTextAnnotation()
         addNewTextAnnotation()
     }
     
     func onAddSignature(_ sender: UIButton) {
         let vc = PDFSignatureVc()
         vc.delegate = self
+        vc.modalPresentationStyle = UIDevice.isIpad() ? .formSheet:.automatic
         parent?.present(UINavigationController(rootViewController: vc), animated: true)
     }
 
@@ -252,7 +252,7 @@ extension PDFEditView {
         annotation.contents = "Text"
         annotation.fontColor = UIColor.black
         annotation.alignment = .center
-        annotation.calculateBounds(page.centerPoint)
+        annotation.calculateBounds(pdfView.currentCenterPointInPage)
 
         page.addAnnotation(annotation)
     }
@@ -321,7 +321,7 @@ extension PDFEditView: PDFSignatureDelegate {
         guard let image = signature, let pdfView = pdfView, let page = pdfView.currentPage else { return }
 
         let size = CGSize(width: 150, height: 150)
-        let origin = page.centerPoint - (size / 2).toPoint()
+        let origin = pdfView.currentCenterPointInPage - (size / 2).toPoint()
 
         let annotaion = PDFImageAnnotation(image: image, properties: nil, rect: CGRect(origin: origin, size: size))
         page.addAnnotation(annotaion)
